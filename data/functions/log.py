@@ -9,6 +9,8 @@ def log(methode:int,message:str):
     log_time_format = "%d.%m.%y %H:%M:%S:%f"
     time = datetime.datetime.now().strftime(log_time_format)[:-4]
     try:
+        if not os.path.exists(os.path.join("data","logs")):
+            os.mkdir(os.path.join("data","logs"))
         with open(os.path.join("data","logs","latest.log"),"w+") as f:
             if methode == ERROR:
                 print(f"[{time}] \033[91m [Error]: \033[0m{message}\n")
