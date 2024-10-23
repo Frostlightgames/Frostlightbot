@@ -13,14 +13,14 @@ def log(methode:int,message:str):
             os.mkdir(os.path.join("data","logs"))
         with open(os.path.join("data","logs","latest.log"),"w+") as f:
             if methode == ERROR:
-                print(f"[{time}] \033[91m [Error]: \033[0m{message}\n")
+                print(f"[{time}] \033[91m [Error]: \033[0m{message}")
                 f.write(f"[{time}] [Error]: {message}")
             elif methode == INFO:
-                print(f"[{time}] \033[94m[Info]: \033[0m{message}\n")
+                print(f"[{time}] \033[94m[Info]: \033[0m{message}")
                 f.write(f"[{time}] [Info]: {message}")
             else:
-                print(f"[{time}] \033[92m[Info]: \033[0m{message}\n")
+                print(f"[{time}] \033[92m[Info]: \033[0m{message}")
                 f.write(f"[{time}] [Info]: {message}")
             f.close()
     except Exception as e:
-        print(f"[{time}] \033[91m [Error] could not log: \033[0m{e}\n")
+        print(f"[{time}] \033[91m [Error] could not log: \033[0m{e}")
