@@ -8,6 +8,7 @@
 #----------------------------------------------------
 
 import discord
+from data.classes.events import *
 from data.classes.database import *
 from data.classes.member import *
 from data.functions.log import *
@@ -31,9 +32,12 @@ class FrostlightBot(discord.Client):
 
         self.member_manager = MemberManager(self)
         await self.member_manager.check()
+        self.events = Events(self)
+
         await bot.change_presence(activity=activity)
         log(INFO,"Frostlightbot online.")
-        
+        self.event_updater = self.loop.create_task(self.events.update())
+
 
 if __name__ == "__main__":
     try:
