@@ -163,9 +163,13 @@ class HalloweenEvent(Event):
         embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,embed=embed,view=self.halloween_notification_view)
 
     async def update(self):
+
+        # Count down time until new lootbag
         self.lootbag_wait_time = max(0,self.lootbag_wait_time-1)
         if self.lootbag_wait_time == 0:
             self.generate_lootbag()
+
+            # Set new time for lootbag to appear
             self.lootbag_wait_time = random.randint(2,10)
 
     async def generate_lootbag(self):
