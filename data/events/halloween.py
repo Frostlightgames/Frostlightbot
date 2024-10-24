@@ -99,8 +99,8 @@ class HalloweenEvent(Event):
     async def prepare(self):
         # Fetching needed roles and channels
         try:
-            self.halloween_chat_category = await self.bot.guild.fetch_channel(1168661170920620172)
-            self.halloween_looter_role = self.bot.guild.get_role(1168660197468819487)
+            self.halloween_chat_category = await self.bot.guild.fetch_channel(self.bot.database.get_config("halloween_chat_category",1168661170920620172))
+            self.halloween_looter_role = self.bot.guild.get_role(self.bot.database.get_config("halloween_looter_role",1168660197468819487))
             halloween_channels = await self.bot.guild.fetch_channels()
 
             # Searching for halloween text channel
