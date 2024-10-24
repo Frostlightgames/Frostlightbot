@@ -1,7 +1,6 @@
 import os
 import sqlite3
 
-# from main import FrostlightBot
 from data.functions.log import *
 
 class Database:
@@ -9,6 +8,7 @@ class Database:
         self.bot = bot
         self.path = os.path.join("data","database.db")
 
+        # Creating all database table if they do not exist
         with sqlite3.connect(self.path) as con:
             database = con.cursor()
             database.execute("""CREATE TABLE IF NOT EXISTS config (
@@ -25,6 +25,7 @@ class Database:
                                 xp      int)
                             """)
             
+            # Adding causal data to database
             self.get_config("guild_id",670321104866377748)
             self.get_config("main_channel_id",970560114115358730)
             self.get_config("main_member_role_id",1135178386906562580)
@@ -45,12 +46,15 @@ class Database:
         return True
     
     def load_member(self,member):
+
+        # Get data from database
         data = self.query("""SELECT * FROM member WHERE id = ?""",[member.id])
         if data == []:
+
+            # Create blank member data
             self.create_member(member.id,member.name)
-            return ["",0,0,0,0,0]
-        else:
-            return data
+            data = ["",0,0,0,0,0]
+        return data
 
     def save_member(self,member):
         data = self.query("""UPDATE member SET name = ?, coins = ?, candy = ?, level = ?, xp = ? WHERE id = ? """,[member.name,member.coins,member.candy,member.level,member.xp,member.id])
@@ -62,5 +66,7 @@ class Database:
         if data != []:
             return data[0]
         else:
+
+            # If key does not exist insert default into database
             self.query("""INSERT INTO config (id,name) VALUES (?,?)""",[default_value,key])
         return default_value
