@@ -4,25 +4,36 @@ class MemberManager:
         self.member_list = []
 
     async def check(self):
+        
+        # Checks all discord guild member
         for member in self.bot.get_all_members():
             self.load(member)
 
     def find(self,discord_member):
         found = False
         for member in self.member_list:
+
+            # Finds member by their id
             if member.id == discord_member.id:
                 found = True
                 return member
+
         if not found:
+
+            # No member found, creating a new one
             new_member = Member(self.bot,discord_member.id,discord_member.name)
             self.member_list.append(new_member)
             return new_member
 
     def save(self,discord_member):
+
+        # Writing current member data to database
         member = self.find(discord_member)
         self.bot.database.save_member(member)
 
     def load(self,discord_member):
+
+        # Getting data from database or creating a new member
         member = self.find(discord_member)
         data = self.bot.database.load_member(member)
         member.name = data[0]
