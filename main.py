@@ -28,6 +28,7 @@ class FrostlightBot(discord.Client):
 
         self.guild = await self.fetch_guild(self.guild_id)
         self.general_text_channel = await self.guild.fetch_channel(self.database.get_config("main_channel_id",970560114115358730))
+        self.log_text_channel = await self.guild.fetch_channel(self.database.get_config("log_channel_id",1006678596846354442))
         self.member_role = self.guild.get_role(self.database.get_config("main_member_role_id",1135178386906562580))
 
         self.member_manager = MemberManager(self)
