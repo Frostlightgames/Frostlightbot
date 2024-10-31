@@ -8,6 +8,8 @@ from data.classes.events import Event
 from data.functions.log import *
 
 SWEETS_GOAL = 100
+CANDY_STEAL_THRESHOLD = 20
+COIN_STEAL_THRESHOLD = 5
 
 class HalloweenNotifyYesButton(discord.ui.Button):
     def __init__(self,event):
@@ -113,20 +115,51 @@ class HalloweenLootBagButton(discord.ui.Button):
             embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
             await interaction.response.send_message(embed=embed,ephemeral=True)
 
+class HalloweenStealButton(discord.ui.Button):
+    def __init__(self,event):
+        self.event = event
+        self.year = datetime.datetime.now().year
+
+        super().__init__(style=discord.ButtonStyle.green, label=f"{self.event.steal["candy"]} Süßigkeiten abgeben")
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.year == datetime.datetime.now().year and datetime.datetime.now().date().strftime("%d-%m") == "31-10" and datetime.datetime.now().hour >= 18 and datetime.datetime.now().hour <= 22:
+            try:
+
+                # Get member and subtract candy
+                await self.event.bot.member_manager.check()
+                if interaction.user.id == self.event.steal["member"]:
+                    for member in self.event.bot.member_manager.member_list:
+                        if member.id == self.event.steal["member"]:
+                            member.candy = max(0,member.candy-self.event.steal["candy"])
+                            self.event.bot.member_manager.save(member)
+
+                # Post ok message
+                embed = discord.Embed(title=f"🍬Du hast {self.event.steal["candy"]} Süßigkeiten an den Halloweenbot abgeben" , color=0xfa5c07)
                 embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
                 await interaction.response.send_message(embed=embed,ephemeral=True)
 
-            await interaction.message.delete()
-            self.bot.free_box = True
-            await asyncio.sleep(30)
-            await info_message.delete()
-        except Exception as e:
-            print(e)
+                # Deleting messages to not use much space
+                try:
+                    await self.event.steal["embed"].delete()
+                except Exception as e:
+                    log(WARNING,f"Failed to delete steal info message: {e}")
+
+                self.event.steal = {"timer":0,"member":None,"candy":0,"embed":None}
+            except Exception as e:
+                log(ERROR,f"Failed to pay candy: {e}")
+        else:
+            embed = discord.Embed(title=f"Das Event für dieses Jahr ist bereits vorbei" , color=0x32a852)
+            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            await interaction.response.send_message(embed=embed,ephemeral=True)
 
 class HalloweenEvent(Event):
     def __init__(self, bot:FrostlightBot) -> None:
         super().__init__(bot)
         self.lootbag_wait_time = random.randint(1,3)
+        self.candy_steal_timer = random.randint(20,40)
+        self.steal_timeout = {}
+        self.steal = {"timer":0,"member":None,"candy":0,"embed":None}
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
@@ -253,12 +286,53 @@ class HalloweenEvent(Event):
 
         # Count down time sub events
         self.lootbag_wait_time = max(0,self.lootbag_wait_time-1)
+        self.candy_steal_timer = max(0,self.candy_steal_timer-1)
+        self.steal["timer"] = max(0,self.steal["timer"]-1)
+
+        # Handling candy steal timeout
+        for member in self.steal_timeout.copy():
+            self.steal_timeout[member] = max(0,self.steal_timeout[member]-1)
+            if self.steal_timeout[member] == 0:
+                del self.steal_timeout[member]
+        
         # Lootbag event
         if self.lootbag_wait_time == 0:
             await self.generate_lootbag()
 
             # Set new time for lootbag to appear
             self.lootbag_wait_time = random.randint(2,7)
+
+        # Candy steal event
+        if self.candy_steal_timer == 0:
+            await self.steal_candy()
+
+            # Set new time for bot to steal
+            self.candy_steal_timer = random.randint(10,30)
+        
+        # End of steal event
+        if self.steal["timer"] == 0 and self.steal["member"] != None:
+            await self.bot.member_manager.check()
+            for member in self.bot.member_manager.member_list:
+                if member.id == self.steal["member"]:
+
+                    # Coin penalty
+                    member.coins = max(0,member.coins-5)
+                    self.bot.member_manager.save(member)
+                    
+                    # Not mentioned announcement
+                    embed = discord.Embed(title=f'🎃 {member.name} hat keine Süßigkeiten abgegeben! 🎃' , color=0xfa5c07)
+                    embed.add_field(name="Beschreibung:",value=f"{member.name} hat nicht innerhalb von 5 Minuten {self.steal["candy"]} Süßigkeiten abgegeben. Dafür wurden 5 Münzen abgezogen.")
+                    embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+                    await self.halloween_text_channel.send(embed=embed)
+
+                    # Deleting messages to not use much space
+                    try:
+                        await self.steal["embed"].delete()
+                    except Exception as e:
+                        log(WARNING,f"Failed to delete steal info message: {e}")
+
+                    # Resetting steal variable
+                    self.steal = {"timer":0,"member":None,"candy":0,"embed":None}
 
     async def generate_lootbag(self):
 
@@ -270,6 +344,33 @@ class HalloweenEvent(Event):
         embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,file=thumbnail,embed=embed,view=self.halloween_loot_bag_view)
         self.bot.persistent_views.clear()
 
+    async def steal_candy(self):
+        
+        # Filter for possible member to steal from
+        steal_list = []
+        await self.bot.member_manager.check()
+        for member in self.bot.member_manager.member_list:
+            if member.candy >= CANDY_STEAL_THRESHOLD or member.coins >= COIN_STEAL_THRESHOLD:
+                if member.id not in self.steal_timeout:
+                    steal_list.append(member.id)
+        
+        # Check if there is a member to steal from
+        if steal_list != []:
+            self.steal["member"] = steal_list[random.randint(0,len(steal_list)-1)]
+            self.steal["timer"] = 1
+            self.steal_timeout[self.steal["member"]] = 35
+
+            # Create steal data
+            discord_member = self.bot.get_user(self.steal["member"])
+            self.steal["candy"] = random.randint(5,10)
+
+            # Steal task announcement
+            embed = discord.Embed(title=f'🍬 {discord_member.name}, Süßes oder Saures! 🍬' , color=0xfa5c07)
+            embed.add_field(name="Beschreibung:",value=f"{discord_member.name} du wurdest ausgewählt {self.steal["candy"]} Süßigkeiten abzugeben! Solltest du nicht in 5 Minuten reagiert haben, werden dir 5 Münzen abgezogen")
+            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            view = discord.ui.View(timeout=None)
+            view.add_item(HalloweenStealButton(self))
+            self.steal["embed"] = await self.halloween_text_channel.send(discord_member.mention ,embed=embed,view=view)
 
     async def end(self):
         await super().end()
@@ -294,6 +395,8 @@ class HalloweenEvent(Event):
 
         # Reset event variables
         self.lootbag_wait_time = 0
+        self.candy_steal_timer = 0
+        self.steal = {"timer":0,"member":None,"candy":0,"embed":None}
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
