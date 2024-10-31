@@ -125,6 +125,10 @@ class HalloweenEvent(Event):
                 permission.view_channel = False
                 self.halloween_text_channel = await self.bot.guild.create_text_channel(f"🍬halloween-{datetime.datetime.now().year}", category=self.halloween_chat_category,position=0,topic=f"Loot Kanal für das Halloween Event in {datetime.datetime.now().year}",overwrites={self.bot.member_role:permission})
 
+            # Change bot avatar to halloween edition
+            with open(os.path.join("data","images","bot_avatar_halloween.png"), 'rb') as image:
+                image_data = image.read()
+                await self.bot.user.edit(avatar=image_data)
             # All clear check
             if self.halloween_chat_category != None and self.halloween_looter_role != None and self.halloween_text_channel != None:
                 self.prepared = True
@@ -192,6 +196,11 @@ class HalloweenEvent(Event):
         # Remove event role from everybody
         for member in self.bot.get_all_members():
             await member.remove_roles(self.halloween_looter_role)
+
+        # Change bot avatar to normal
+        with open(os.path.join("data","images","bot_avatar.png"), 'rb') as image:
+            image_data = image.read()
+            await self.bot.user.edit(avatar=image_data)
 
         # Reset game status
         activity = discord.Game(name="Frostlightgames")
