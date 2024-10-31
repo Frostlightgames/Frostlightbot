@@ -217,6 +217,15 @@ class HalloweenEvent(Event):
     async def end(self):
         await super().end()
 
+        # Create a summary of the collected candy
+        await self.bot.member_manager.check()
+        embed = discord.Embed(title=f'🍬Das Event ist vorbei, hier ist die auswertung🍬' , color=0xfa5c07)
+        for member in self.bot.member_manager.member_list:
+            if member.candy > 0:
+                embed.add_field(name=f"{member.name}",value=f"{member.candy} 🍬", inline=False)
+        embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+        await self.halloween_text_channel.send(self.halloween_looter_role.mention ,embed=embed)
+
         # Set halloween channel to read only
         permission = discord.PermissionOverwrite()
         permission.send_messages = False
