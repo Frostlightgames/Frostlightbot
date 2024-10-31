@@ -260,8 +260,8 @@ class HalloweenEvent(Event):
         # Announce event start
         activity = discord.Game(name="Halloween")
         await self.bot.change_presence(activity=activity)
-        embed = discord.Embed(color=0xFC4C02,title="***🎃🦇👻Happy Halloween👻🦇🎃***")
-        # await self.bot.general_text_channel.send(self.bot.member_role.mention,embed=embed)
+        embed = discord.Embed(color=0xfa5c07,title="***🎃🦇👻Happy Halloween👻🦇🎃***")
+        await self.bot.general_text_channel.send(self.bot.member_role,embed=embed)
 
         # Unlocking halloween text channel
         permission = discord.PermissionOverwrite()
