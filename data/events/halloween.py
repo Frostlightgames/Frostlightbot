@@ -93,6 +93,7 @@ class HalloweenEvent(Event):
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
+        self.halloween_reward_role = None
         self.halloween_notification_title_text = "**Es ist Halloween und hier könnt ihr nun Süßigkeiten sammeln. Wenn ihr jedoch keine Benachrichtigungen bekommen wollt, stellt dies hier ein!**"
         self.halloween_notification_embed = None
         self.halloween_notification_view = None
@@ -151,6 +152,16 @@ class HalloweenEvent(Event):
                     if message.embeds[0].title == self.halloween_notification_title_text:
                         self.halloween_notification_embed = message.embeds[0]
                         break
+
+            # Searching for halloween reward role
+            halloween_roles = await self.bot.guild.fetch_roles()
+            for role in halloween_roles:
+                if str(role.name).startswith("Halloween Candy Collector") and str(role.name).split(" ")[3] == str(datetime.datetime.now().year):
+                    self.halloween_reward_role = role
+
+            # Creating halloween reward role if it does not exist
+            if self.halloween_reward_role == None:
+                self.halloween_reward_role = await self.bot.guild.create_role(name=f"Halloween Candy Collector {datetime.datetime.now().year}",color=0xe67e22)
 
             # Change bot avatar to halloween edition
             with open(os.path.join("data","images","bot_avatar_halloween.png"), 'rb') as image:
