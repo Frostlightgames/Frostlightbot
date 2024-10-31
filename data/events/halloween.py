@@ -144,6 +144,14 @@ class HalloweenEvent(Event):
                 permission.view_channel = False
                 self.halloween_text_channel = await self.bot.guild.create_text_channel(f"🍬halloween-{datetime.datetime.now().year}", category=self.halloween_chat_category,position=0,topic=f"Loot Kanal für das Halloween Event in {datetime.datetime.now().year}",overwrites={self.bot.member_role:permission})
 
+            # Searching for halloween notification embed
+            messages = [message async for message in self.halloween_text_channel.history(limit=10, oldest_first=True)]
+            for message in messages:
+                if len(message.embeds) == 1:
+                    if message.embeds[0].title == self.halloween_notification_title_text:
+                        self.halloween_notification_embed = message.embeds[0]
+                        break
+
             # Change bot avatar to halloween edition
             with open(os.path.join("data","images","bot_avatar_halloween.png"), 'rb') as image:
                 image_data = image.read()
@@ -186,14 +194,12 @@ class HalloweenEvent(Event):
             await member.add_roles(self.halloween_looter_role)
 
         # Sending notification option embed
-        self.halloween_notification_view = discord.ui.View(timeout=None)
-        embed = discord.Embed(title="Es ist Halloween und hier könnt ihr nun Süßigkeiten sammeln. Wenn ihr jedoch keine Benachrichtigungen bekommen wollt, stellt dies hier ein!", color=0xfa5c07)
-        embed.add_field(name="Beschreibung:",value="Hier kannst du entscheiden, ob du Benachrichtigungen erhalten willst!")
-        self.halloween_notification_view.add_item(item=HalloweenNotifyButton(self,0,self))
-        self.halloween_notification_view.add_item(item=HalloweenNotifyButton(self,1,self))
-        self.bot.add_view(self.halloween_notification_view)
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/548636271107637251/1168692612224516116/bell.png?ex=6707ba10&is=67066890&hm=e43991fc9f86761ca9365e2fb0d5e61e223c22ac09864f37555756950646432c&")
-        embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,embed=embed,view=self.halloween_notification_view)
+        if self.halloween_notification_embed == None:
+            embed = discord.Embed(title=self.halloween_notification_title_text, color=0xfa5c07)
+            embed.add_field(name="Beschreibung:",value="Hier kannst du entscheiden, ob du Benachrichtigungen erhalten willst!")
+            thumbnail = discord.File(os.path.join("data","images","halloweenbell.png"), filename='halloweenbell.png')  
+            embed.set_thumbnail(url="attachment://halloweenbell.png")
+            embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,file=thumbnail,embed=embed,view=self.halloween_notification_view)
 
     async def update(self):
 
@@ -234,6 +240,15 @@ class HalloweenEvent(Event):
         # Remove event role from everybody
         for member in self.bot.get_all_members():
             await member.remove_roles(self.halloween_looter_role)
+
+        self.halloween_text_channel = None
+        self.halloween_chat_category = None
+        self.halloween_looter_role = None
+        self.halloween_reward_role = None
+        self.halloween_notification_embed = None
+        self.halloween_notification_view = None
+        self.halloween_loot_bag_view = None
+        self.prepared = False
 
         # Change bot avatar to normal
         with open(os.path.join("data","images","bot_avatar.png"), 'rb') as image:
