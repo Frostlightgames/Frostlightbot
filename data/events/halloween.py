@@ -7,6 +7,7 @@ from main import FrostlightBot
 from data.classes.events import Event
 from data.functions.log import *
 
+SWEETS_GOAL = 100
 
 class HalloweenNotifyYesButton(discord.ui.Button):
     def __init__(self,event):
@@ -45,37 +46,73 @@ class HalloweenNotifyNoButton(discord.ui.Button):
             await interaction.response.send_message(embed=embed,ephemeral=True)
 
 class HalloweenLootBagButton(discord.ui.Button):
-    def __init__(self,bot:FrostlightBot):
+    def __init__(self,bot:FrostlightBot,event):
         self.bot = bot
+        self.event = event
+        self.year = datetime.datetime.now().year
 
-        super().__init__(style=discord.ButtonStyle.blurple, label="Halloween Snacks")
+        super().__init__(style=discord.ButtonStyle.blurple, label="Halloween Snacks",custom_id=f"HalloweenLootBagButton{datetime.datetime.now().year}")
 
     async def callback(self, interaction: discord.Interaction):
-        try:
-            user = interaction.user.name
-            if user not in self.bot.loot_coins:
-                self.bot.loot_coins[user] = [0,False]
-            sweets = random.randint(3,8)
-            self.bot.loot_coins[user][0] += sweets
-            await self.bot.save()
-            if self.bot.loot_coins[user][0] >= 50 and not self.bot.loot_coins[user][1]:
-                self.bot.loot_coins[user][1] = True
-                await self.bot.save()
-                await interaction.user.add_roles(self.bot.reward_role)
-                embed = discord.Embed(title=f'👻🎃🦇 {interaction.user.name} hat das Süßigkeiten Ziel erreicht! 🦇🎃👻' , color=0xbfa945)
-                embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
-                info_message = await self.bot.loot_channel.send(embed=embed)
-            else:
-                embed = discord.Embed(title=f'🍬 {interaction.user.name} hat {sweets} Süßigkeiten gesammelt 🍬' , color=0xbfa945)
-                embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
-                info_message = await self.bot.loot_channel.send(embed=embed)
 
-            if self.bot.loot_coins[user][1]:
-                embed = discord.Embed(title=f"Du hast bereits {self.bot.loot_coins[user][0]} Süßigkeiten gesammelt, aber hör nicht auf mit sammeln! 🍬" , color=0xbfa945)
-                embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
-                await interaction.response.send_message(embed=embed,ephemeral=True)
-            else:
-                embed = discord.Embed(title=f"Sammel Status: {self.bot.loot_coins[user][0]}|{'#'*int(20*min(self.bot.loot_coins[user][0]/50,1))}{'-'*(20-int(20*min(self.bot.loot_coins[user][0]/50,1)))}|50" , color=0xbfa945)
+        if self.year == datetime.datetime.now().year and datetime.datetime.now().date().strftime("%d-%m") == "31-10" and datetime.datetime.now().hour >= 18 and datetime.datetime.now().hour <= 22:
+            # Deleting lootbag message
+            try:
+                await interaction.message.delete()
+            except Exception as e:
+                log(WARNING,f"Failed to delete lootbag message: {e}")
+
+            try:
+
+                # Calculate reward
+                candy = random.randint(3,10)
+                coins = random.randint(2,5)
+
+                # Applying reward
+                await self.bot.member_manager.check()
+                member = self.bot.member_manager.find(interaction.user)
+                member.candy += candy
+                member.coins += coins
+                self.bot.member_manager.save(interaction.user)
+
+                if member.candy >= SWEETS_GOAL and member.candy-candy < SWEETS_GOAL:
+
+                    # Sweets goal reached
+                    await interaction.user.add_roles(self.event.halloween_reward_role)
+                    embed = discord.Embed(title=f'👻🎃🦇 **{interaction.user.name} hat das Süßigkeiten Ziel erreicht!** 🦇🎃👻' , color=0xfa5c07)
+                    embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+                    await self.event.halloween_text_channel.send(embed=embed)
+                elif member.candy < SWEETS_GOAL:
+
+                    # Sweets goal not yet reached
+                    embed = discord.Embed(title=f'🍬 {interaction.user.name} hat einen Lootbag geöffnet 🍬' , color=0xfa5c07)
+                    embed.add_field(name="Beschreibung:",value=f"{interaction.user.name} hat darin Süßigkeiten und Münzen gefunden!")
+                    embed.add_field(name="Süßigkeiten:",value=f"**{candy}** 🍬")
+                    embed.add_field(name="Münzen:",value=f"**{coins}** <a:frostlightcoin:857720879089975326>")
+                    embed.add_field(name="Sammelstatus:",value=f"{member.candy} |{'#'*int(20*min(member.candy/SWEETS_GOAL,1))}{'-'*(20-int(20*min(member.candy/SWEETS_GOAL,1)))}| {SWEETS_GOAL}")
+                    embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+                    info_message = await self.event.halloween_text_channel.send(embed=embed)
+                    await asyncio.sleep(60)
+
+                    # Deleting messages to not use much space
+                    try:
+                        await info_message.delete()
+                    except Exception as e:
+                        log(WARNING,f"Failed to delete collection info message: {e}")
+                else:
+
+                    # Sweets goal already reached
+                    embed = discord.Embed(title=f"Du hast bereits {member.candy} Süßigkeiten gesammelt, aber hör nicht auf mit sammeln! 🍬" , color=0xfa5c07)
+                    embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+                    await interaction.response.send_message(embed=embed,ephemeral=True)
+
+            except Exception as e:
+                log(ERROR,f"Failed to open Lootbag: {e}")
+        else:
+            embed = discord.Embed(title=f"Das Event für dieses Jahr ist bereits vorbei" , color=0xfa5c07)
+            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            await interaction.response.send_message(embed=embed,ephemeral=True)
+
                 embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
                 await interaction.response.send_message(embed=embed,ephemeral=True)
 
@@ -89,7 +126,7 @@ class HalloweenLootBagButton(discord.ui.Button):
 class HalloweenEvent(Event):
     def __init__(self, bot:FrostlightBot) -> None:
         super().__init__(bot)
-        self.lootbag_wait_time = 0
+        self.lootbag_wait_time = random.randint(1,3)
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
@@ -214,22 +251,25 @@ class HalloweenEvent(Event):
 
     async def update(self):
 
-        # Count down time until new lootbag
+        # Count down time sub events
         self.lootbag_wait_time = max(0,self.lootbag_wait_time-1)
+        # Lootbag event
         if self.lootbag_wait_time == 0:
-            self.generate_lootbag()
+            await self.generate_lootbag()
 
             # Set new time for lootbag to appear
-            self.lootbag_wait_time = random.randint(2,10)
+            self.lootbag_wait_time = random.randint(2,7)
 
     async def generate_lootbag(self):
-        button_view = discord.ui.View(timeout=None)
-        embed = discord.Embed(title="Eine Süßigkeitenbox ist erschienen", color=0xfa5c07)
-        embed.add_field(name="Beschreibung:",value="Sammle 100 Süßigkeiten um eine spezielle Rolle zu erhalten!")
-        button_view.add_item(item=HalloweenLootBagButton(self))
-        self.bot.add_view(button_view)
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/548636271107637251/1168692081821220934/candybag.png?ex=6707b991&is=67066811&hm=6abb4d2454340b1de391219dc6eda2d6716e518c0b9cbcd13572172066b0c428&")
-        embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,embed=embed,view=button_view)
+
+        # Generate clickable loot bag embed
+        embed = discord.Embed(title="Ein Lootbag ist erschienen", color=0xfa5c07)
+        embed.add_field(name="Beschreibung:",value=f"Sammle {SWEETS_GOAL} Süßigkeiten um eine spezielle Rolle zu erhalten!")
+        thumbnail = discord.File(os.path.join("data","images","candybag.png"), filename='candybag.png')  
+        embed.set_thumbnail(url="attachment://candybag.png")
+        embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,file=thumbnail,embed=embed,view=self.halloween_loot_bag_view)
+        self.bot.persistent_views.clear()
+
 
     async def end(self):
         await super().end()
@@ -252,6 +292,8 @@ class HalloweenEvent(Event):
         for member in self.bot.get_all_members():
             await member.remove_roles(self.halloween_looter_role)
 
+        # Reset event variables
+        self.lootbag_wait_time = 0
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
