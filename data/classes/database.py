@@ -28,6 +28,7 @@ class Database:
             # Adding causal data to database
             self.get_config("guild_id",670321104866377748)
             self.get_config("main_channel_id",970560114115358730)
+            self.get_config("log_channel_id",1006678596846354442)
             self.get_config("main_member_role_id",1135178386906562580)
 
     def query(self,query,attributes=[]):
