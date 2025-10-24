@@ -1,38 +1,73 @@
-from sqlalchemy import Column, Integer, String
-from Frostlightbot.data.classes.dbConnect import Base, engine
+import os
+import sqlite3
 
-class Config(Base):
-    __tablename__ = "config"
+class Database:
+    def __init__(self):
+        os.makedirs("data", exist_ok=True)
+        self.path = os.path.join("data","database.db")
 
-    id      = Column(Integer, primary_key=True, autoincrement=False)
-    name    = Column(String, nullable=False, unique=True)
+        with sqlite3.connect(self.path) as con:
+            database = con.cursor()
+            database.execute("""CREATE TABLE IF NOT EXISTS config (
+                                key     TEXT PRIMARY KEY,
+                                value   TEXT)
+                            """)
 
-    def __repr__(self):
-        return f"<Config(id={self.id}, name='{self.name}')>"
-    
-    def __init__(self,id,name):
-        self.id     = id
-        self.name   = name
+            database.execute("""CREATE TABLE IF NOT EXISTS member (
+                                name    VARCHAR,
+                                uid     INTEGER PRIMARY KEY,
+                                coins   INTEGER,
+                                candy   INTEGER,
+                                level   INTEGER,
+                                xp      INTEGER)
+                            """)
 
-class Member(Base):
-    __tablename__ = "member"
+    def query(self, query: str, attributes=[], fetch=True):
+        if os.path.exists(self.path):
+            with sqlite3.connect(self.path) as con:
+                database = con.cursor()
+                database.execute(query, attributes)
+                if fetch:
+                    return database.fetchall()
+                else:
+                    con.commit()
 
-    id      = Column(Integer, primary_key=True, autoincrement=False)
-    name    = Column(String , nullable=False)
-    coins   = Column(Integer)
-    candy   = Column(Integer)
-    level   = Column(Integer)
-    xp      = Column(Integer)
+    def get_allowed_keys(self, table):
+        allowed_keys_data = self.query(f"PRAGMA table_info({table})")
+        allowed_keys = []
+        for allowed_key in allowed_keys_data:
+            allowed_keys.append(allowed_key[1])
 
-    def __repr__(self):
-        return f"<Member(id={self.id}, name='{self.name}', coins={self.coins}, candy={self.candy}, level={self.level}, xp={self.xp})>"
+        return allowed_keys
 
-    def __init__(self,id,name,coins=0,candy=0,level=1,xp=0):
-        self.id     = id
-        self.name   = name
-        self.coins  = coins
-        self.candy  = candy
-        self.level  = level
-        self.xp     = xp
+    def set_config(self,key:str ,value:str):
+        data = self.get_config(key)
+        if not data:
+            self.query("INSERT INTO config (key, value) VALUES (?, ?)", [key, value], fetch=False)
+        else:
+            self.query("UPDATE config SET value = ? WHERE key = ?",[value, key], fetch=False)
 
-Base.metadata.create_all(engine)
+    def get_config(self, key: str, default: str = None) -> str:
+        data = self.query("SELECT value FROM config WHERE key = ?", [key])
+        return data[0][0] if data else default
+
+    def set_member_value(self, uid:int, key:str, value:int):
+        if key not in self.get_allowed_keys("member"):
+            raise ValueError("Key not in allowed keys")
+        
+        data = self.query("SELECT uid FROM member WHERE uid = ?",[uid])
+        if not data:
+            self.query("INSERT INTO member (uid, coins, candy, level, xp) VALUES (?, 0, 0, 0, 0)", [uid], fetch=False)
+            self.query(f"UPDATE member SET {key} = ? WHERE uid = ?", [value, uid], fetch=False)
+        else:
+            self.query(f"UPDATE member SET {key} = ? WHERE uid = ?",[value, uid], fetch=False)
+
+    def get_member_value(self, uid: int, key: str):
+        if key not in self.get_allowed_keys("member"):
+            raise ValueError("Key not in allowed keys")
+        
+        data = self.query(f"SELECT {key} FROM member WHERE uid = ?", [uid])
+        return data[0][0] if data else None
+
+
+DATABASE = Database()
