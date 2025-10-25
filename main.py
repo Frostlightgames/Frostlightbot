@@ -1,6 +1,7 @@
 import os
 import sys
 import discord
+import datetime
 import traceback
 
 from pathlib import Path
@@ -32,26 +33,14 @@ class FrostlightBot(discord.Client):
         self.general_text_channel = await self.guild.fetch_channel(DATABASE.get_config("main_channel_id"))
         self.sandbox_text_channel = await self.guild.fetch_channel(DATABASE.get_config("sandbox_channel_id"))
         self.log_text_channel = await self.guild.fetch_channel(DATABASE.get_config("log_channel_id"))
-        print(DATABASE.get_config("main_member_role_id"))
         self.member_role = self.guild.get_role(int(DATABASE.get_config("main_member_role_id")))
-        print(self.guild.get_role(1135178386906562580),self.member_role)
 
         self.event_manager = EventManager(self)
         self.member_manager = MemberManager(self)
 
         await LOGGER.info("Frostlightbot Online", self)
 
-        embed = discord.Embed(color=0xfa5c07,title="***Test***")
-        embed.add_field(name="Link zum Event",value=self.sandbox_text_channel.mention)
-        thumbnail = discord.File(os.path.join("data","images","halloweenbell.png"), filename='halloweenbell.png')  
-        embed.set_thumbnail(url="attachment://halloweenbell.png")
-        await self.sandbox_text_channel.send(self.member_role.mention,embed=embed,file=thumbnail)
-
-        embed = discord.Embed(color=0xfa5c07,title="***Test***")
-        embed.add_field(name="Link zum Event",value=self.sandbox_text_channel.mention)
-        thumbnail = discord.File(os.path.join("data","images","candybag.png"), filename='candybag.png')  
-        embed.set_thumbnail(url="attachment://candybag.png")
-        await self.sandbox_text_channel.send(self.member_role.mention,embed=embed,file=thumbnail)
+        self.event_updater = self.loop.create_task(self.event_manager.update())
 
 token = os.getenv("TOKEN")
 activity = discord.Game(name="Frostlightgames")
