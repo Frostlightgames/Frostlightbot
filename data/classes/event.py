@@ -6,7 +6,8 @@ class Event:
         self.id = ""
         self.has_started = False
 
-    async def check_time(self): ...
+    async def check_time(self):
+        return False
     async def prepare(self): ...
     async def start(self):
         self.has_started = True
