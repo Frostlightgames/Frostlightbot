@@ -4,10 +4,14 @@ import datetime
 from main import *
 from data.classes.logger import LOGGER
 
+from data.events.halloween.halloween import  HalloweenEvent
+
 class EventManager:
     def __init__(self,bot:FrostlightBot) -> None:
         self.bot = bot
-        self.events = []
+        self.events = [
+            HalloweenEvent(self.bot)
+        ]
 
     async def update(self):
         while not self.bot.is_closed():
