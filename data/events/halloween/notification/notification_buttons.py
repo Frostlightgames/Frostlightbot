@@ -13,12 +13,12 @@ class HalloweenNotifyYesButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         if self.event.check_event_time_window() and self.year == datetime.datetime.now().year:
             embed = discord.Embed(title=f"Du erhältst nun Loot Benachrichtigungen!" , color=0x32a852)
-            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
             await interaction.response.send_message(embed=embed,ephemeral=True)
             await interaction.user.add_roles(self.event.halloween_looter_role)
         else:
             embed = discord.Embed(title=f"Das Event für dieses Jahr ist bereits vorbei" , color=0xfa5c07)
-            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
             await interaction.response.send_message(embed=embed,ephemeral=True)
 
 class HalloweenNotifyNoButton(discord.ui.Button):
@@ -31,10 +31,10 @@ class HalloweenNotifyNoButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         if self.event.check_event_time_window() and self.year == datetime.datetime.now().year:
             embed = discord.Embed(title=f"Du erhältst keine Loot Benachrichtigungen mehr!" , color=0xa83232)
-            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
             await interaction.response.send_message(embed=embed,ephemeral=True)
             await interaction.user.remove_roles(self.event.halloween_looter_role)
         else:
             embed = discord.Embed(title=f"Das Event für dieses Jahr ist bereits vorbei" , color=0xfa5c07)
-            embed.set_footer(text=f'[{str(datetime.datetime.today().strftime("%d.%m.%Y"))} {str(datetime.datetime.today().strftime("%H:%M"))}]')
+            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
             await interaction.response.send_message(embed=embed,ephemeral=True)
