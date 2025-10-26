@@ -168,7 +168,8 @@ class HalloweenEvent(Event):
         if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message", False):
             embed = discord.Embed(color=0xfa5c07,title="***🎃🦇👻Happy Halloween👻🦇🎃***")
             embed.add_field(name="Link zum Event",value=self.halloween_text_channel.mention)
-            await self.bot.sandbox_text_channel.send(self.bot.member_role.mention,embed=embed)
+            channel = self.bot.sandbox_text_channel if DEBUG else self.bot.general_text_channel
+            await channel.send(self.bot.member_role.mention,embed=embed)
             DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message",True)
 
         # Send tutorial message
