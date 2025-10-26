@@ -16,7 +16,7 @@ class MemberManager:
 
     def get(self,uid=None, name=None, member:discord.Member=None):
         self.scan_for_member()
-        member_uid = uid or member.id
+        member_uid = uid or member.id if member else None
         if member_uid in self.member_list:
             return self.member_list[member_uid]
         else:
