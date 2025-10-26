@@ -2,7 +2,7 @@ import os
 import discord
 import datetime
 
-from data.events.halloween.halloween import SWEETS_GOAL, LOOT_BAG_REMAIN_TIMER, HalloweenEvent
+from data.events.halloween.halloween import SWEETS_GOAL, HalloweenEvent
 
 async def generate_loot_bag(event: HalloweenEvent):
 
