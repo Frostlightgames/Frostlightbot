@@ -29,23 +29,28 @@ class HalloweenEvent(Event):
         self.prepared = False
 
     async def check_event_time(self):
+        
+        # Halloween Event at 31.10 from 18:00 to 23:00
 
         # Check for halloween date
-        if datetime.datetime.now().date().strftime("%d-%m") == "25-10":
+        if datetime.datetime.now().date().strftime("%d-%m") == "26-10":
 
             # Pre event checkups and preparation, the day of the event
-            if datetime.datetime.now().hour >= 0 and datetime.datetime.now().hour <= 22 and self.prepared == False:
+            if datetime.datetime.now().hour >= 0 and datetime.datetime.now().hour <= 23 and self.prepared == False:
                 await self.prepare()
 
             # Main halloween event
-            if datetime.datetime.now().hour >= 3 and datetime.datetime.now().hour <= 22:
+            if datetime.datetime.now().hour >= 2 and datetime.datetime.now().hour <= 23:
                 return True
             
         return await super().check_event_time()
     
     def check_event_time_window(self):
+
+        # Halloween Event at 31.10 from 18:00 to 23:00
         now = datetime.datetime.now()
-        return now.date().strftime("%d-%m") == "25-10" and now.hour >= 18 and now.hour <= 22
+        # return now.date().strftime("%d-%m") == "31-10" and now.hour >= 18 and now.hour <= 22
+        return True
     
     async def prepare(self):
         from data.events.halloween.lootbag.lootbag_collection_button import HalloweenLootBagButton
@@ -150,10 +155,10 @@ class HalloweenEvent(Event):
             DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_role_distribution",True)
 
         # Announce event start
+        await LOGGER.info("Sending event start announcement")
+        activity = discord.Game(name="Halloween")
+        await self.bot.change_presence(activity=activity)
         if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message", False):
-            await LOGGER.info("Sending event start announcement")
-            activity = discord.Game(name="Halloween")
-            await self.bot.change_presence(activity=activity)
             embed = discord.Embed(color=0xfa5c07,title="***🎃🦇👻Happy Halloween👻🦇🎃***")
             embed.add_field(name="Link zum Event",value=self.halloween_text_channel.mention)
             await self.bot.sandbox_text_channel.send(self.bot.member_role.mention,embed=embed)
