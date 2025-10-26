@@ -8,7 +8,7 @@ from data.classes.event import Event
 from data.classes.logger import LOGGER
 from data.classes.database import DATABASE
 
-DEBUG = True
+DEBUG = False
 SWEETS_GOAL = 100
 LOOT_BAG_REMAIN_TIMER = 3
 
