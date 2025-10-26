@@ -1,6 +1,7 @@
 import random
 import asyncio
 import discord
+import textwrap
 import datetime
 
 from main import FrostlightBot
@@ -156,13 +157,11 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
         # Sweets goal reached
         await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f"🎉👻 {interaction.user.name} hat das Süßigkeiten-Ziel erreicht! 🍬🏆",color=0xfa5c07)
-        embed.description = f"""
-            Wahnsinn, {interaction.user.name}! Deine **{bet}** eingesetzten Süßigkeiten  
-            haben dich direkt ans Ziel gebracht! 🕸️  
-
+        embed.description = textwrap.dedent(f"""
+            Wahnsinn, {interaction.user.name}! Deine **{bet}** eingesetzten Süßigkeiten haben dich direkt ans Ziel gebracht! 🕸️  
 
             Die Geister jubeln ... du hast das Spukrad gemeistert! 🎃✨
-        """
+        """)
         embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
         await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
@@ -171,20 +170,19 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
 
         # Player won
         progress_ratio = min(member.candy / SWEETS_GOAL, 1)
-        filled = int(20 * progress_ratio)
-        bar = f"{'🟧' * filled}{'⬛' * (20 - filled)}"
+        filled = int(15 * progress_ratio)
+        bar = f"{'🟧' * filled}{'⬛' * (15 - filled)}"
         percent = int(progress_ratio * 100)
 
         embed = discord.Embed(title=f"🧙‍♂️ {interaction.user.name} hat das Spukrad gedreht... und gewonnen! 🎉",color=0xfa5c07)
-        embed.description = f"""
-            Das Glück war heute auf deiner Seite, {interaction.user.name}!  
+        embed.description = textwrap.dedent(f"""
             Deine **{bet}** eingesetzten Süßigkeiten 🍬 haben sich verdoppelt!  
 
             **Aktueller Süßigkeitenstand:** `{member.candy}`  
             `{bar}` {percent}%
 
             Der Nebel lichtet sich... doch das Rad wird bald wieder locken. 👻
-        """
+        """)
         embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
@@ -194,15 +192,14 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
 
         # Player already reached the goal
         embed = discord.Embed(title=f"🍬 {interaction.user.name} sammelt weiter ... das Ziel ist längst geknackt! 🎃",color=0xfa5c07)
-        embed.description = f"""
-            {interaction.user.name}, hat das Süßigkeiten-Ziel schon erreicht,  
-            aber das Spukrad lässt nicht los! 💫  
+        embed.description = textwrap.dedent(f"""
+            {interaction.user.name}, hat das Süßigkeiten-Ziel schon erreicht.
 
             Dein Einsatz von **{bet}** Süßigkeiten zahlt sich weiter aus.  
             **Aktueller Süßigkeitenstand:** `{member.candy}/{SWEETS_GOAL}`  
 
             Die Geister nicken anerkennend... du bist ein wahrer Sammler. 👻
-        """
+        """)
         embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
@@ -212,20 +209,19 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
 
         # Player does not win or lose
         progress_ratio = min(member.candy / SWEETS_GOAL, 1)
-        filled = int(20 * progress_ratio)
-        bar = f"{'🟧' * filled}{'⬛' * (20 - filled)}"
+        filled = int(15 * progress_ratio)
+        bar = f"{'🟧' * filled}{'⬛' * (15 - filled)}"
         percent = int(progress_ratio * 100)
 
         embed = discord.Embed(title=f"🕯️ {interaction.user.name} dreht das Spukrad... nichts passiert.",color=0xfa5c07)
-        embed.description = f"""
-            Die Schatten haben still zugeschaut.  
+        embed.description = textwrap.dedent(f"""
             Deine **{bet}** gesetzten Süßigkeiten 🍬 bleiben unberührt ... diesmal weder Glück noch Pech.  
 
             **Aktueller Süßigkeitenstand:** `{member.candy}`  
             `{bar}` {percent}%
 
             Vielleicht beim nächsten Mal... das Rad wartet. 🕸️
-        """
+        """)
         embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
@@ -235,20 +231,19 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
 
         # Player looses bet 
         progress_ratio = min(member.candy / SWEETS_GOAL, 1)
-        filled = int(20 * progress_ratio)
-        bar = f"{'🟧' * filled}{'⬛' * (20 - filled)}"
+        filled = int(15 * progress_ratio)
+        bar = f"{'🟧' * filled}{'⬛' * (15 - filled)}"
         percent = int(progress_ratio * 100)
 
         embed = discord.Embed(title=f"💀 {interaction.user.name} wurde vom Spukrad verflucht!",color=0xfa5c07)
-        embed.description = f"""
-            Das Rad lacht dunkel im Nebel...  
+        embed.description = textwrap.dedent(f"""
             Deine **{bet}** gesetzten Süßigkeiten 🍬 verschwinden in den Schatten.  
 
             **Aktueller Süßigkeitenstand:** `{member.candy}`  
             `{bar}` {percent}%
 
             Die Geister flüstern: „Vielleicht beim nächsten Dreh...“ 👻
-        """
+        """)
         embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()

@@ -1,6 +1,7 @@
 import random
 import asyncio
 import discord
+import textwrap
 import datetime
 
 from main import FrostlightBot
@@ -78,17 +79,19 @@ class HalloweenLootBagButton(discord.ui.Button):
 
         # Collection information
         progress_ratio = min(member.candy / SWEETS_GOAL, 1)
-        filled = int(20 * progress_ratio)
-        bar = f"{'🟧' * filled}{'⬛' * (20 - filled)}"
+        filled = int(15 * progress_ratio)
+        bar = f"{'🟧' * filled}{'⬛' * (15 - filled)}"
         percent = int(progress_ratio * 100)
 
         embed = discord.Embed(title=f"🎃 {interaction.user.name} hat einen Lootbag geöffnet! 🎃",color=0xfa5c07)
-        embed.description = f"""
-                **{interaction.user.name}** hat darin Süßigkeiten und Münzen gefunden!\n\n
-                🍬 **Süßigkeiten:** `{candy}`\n
-                <a:frostlightcoin:857720879089975326> **Münzen:** `{coins}`\n\n
-                **Sammelstatus:** `{member.candy}/{SWEETS_GOAL}`\n
-                `{bar}` {percent}%"""
+        embed.description = textwrap.dedent(f"""
+                **{interaction.user.name}** hat darin Süßigkeiten und Münzen gefunden!
+
+                🍬 **Süßigkeiten:** `{candy}`
+                <a:frostlightcoin:857720879089975326> **Münzen:** `{coins}`
+                
+                **Sammelstatus:** `{member.candy}/{SWEETS_GOAL}`
+                `{bar}` {percent}%""")
         embed.set_thumbnail(url="attachment://candybag.png")
         embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
         info_message = await self.event.halloween_text_channel.send(embed=embed)
