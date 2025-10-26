@@ -8,6 +8,7 @@ from data.classes.event import Event
 from data.classes.logger import LOGGER
 from data.classes.database import DATABASE
 
+DEBUG = True
 SWEETS_GOAL = 100
 LOOT_BAG_REMAIN_TIMER = 3
 
@@ -36,14 +37,14 @@ class HalloweenEvent(Event):
         # Halloween Event at 31.10 from 18:00 to 23:00
 
         # Check for halloween date
-        if datetime.datetime.now().date().strftime("%d-%m") == "26-10":
+        if datetime.datetime.now().date().strftime("%d-%m") == "31-10" or DEBUG:
 
             # Pre event checkups and preparation, the day of the event
-            if datetime.datetime.now().hour >= 0 and datetime.datetime.now().hour <= 23 and self.prepared == False:
+            if ((datetime.datetime.now().hour >= 0 and datetime.datetime.now().hour <= 22) or DEBUG) and self.prepared == False:
                 await self.prepare()
 
             # Main halloween event
-            if datetime.datetime.now().hour >= 2 and datetime.datetime.now().hour <= 23:
+            if (datetime.datetime.now().hour >= 18 and datetime.datetime.now().hour <= 22) or DEBUG:
                 return True
             
         return await super().check_event_time()
@@ -52,8 +53,7 @@ class HalloweenEvent(Event):
 
         # Halloween Event at 31.10 from 18:00 to 23:00
         now = datetime.datetime.now()
-        # return now.date().strftime("%d-%m") == "31-10" and now.hour >= 18 and now.hour <= 22
-        return True
+        return (now.date().strftime("%d-%m") == "31-10" and now.hour >= 18 and now.hour <= 22) or DEBUG
     
     async def prepare(self):
         from data.events.halloween.lootbag.lootbag_collection_button import HalloweenLootBagButton
