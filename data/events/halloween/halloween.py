@@ -164,6 +164,15 @@ class HalloweenEvent(Event):
             await self.bot.sandbox_text_channel.send(self.bot.member_role.mention,embed=embed)
             DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message",True)
 
+        # Send tutorial message
+        await LOGGER.info("Sending tutorial message")
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_tutorial_message", False):
+            with open(os.path.join("data","events","halloween","tutorial_message.md"),"r",encoding="utf-8") as f:
+                content = f.read()
+                f.close()
+            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now().year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}")
+            DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_tutorial_message",True)
+
         # Sending notification option embed
         await LOGGER.info("Sending notification option embed")
         if self.halloween_notification_embed == None:
@@ -171,7 +180,7 @@ class HalloweenEvent(Event):
             embed.add_field(name="Beschreibung:",value="Hier kannst du entscheiden, ob du Benachrichtigungen erhalten willst!")
             thumbnail = discord.File(os.path.join("data","images","halloweenbell.png"), filename='halloweenbell.png')  
             embed.set_thumbnail(url="attachment://halloweenbell.png")
-            embed = await self.halloween_text_channel.send(self.halloween_looter_role.mention,file=thumbnail,embed=embed,view=self.halloween_notification_view)
+            embed = await self.halloween_text_channel.send(file=thumbnail,embed=embed,view=self.halloween_notification_view)
 
         await LOGGER.info("Halloween event fully started")
 
