@@ -38,6 +38,7 @@ class FrostlightBot(discord.Client):
         self.event_manager = EventManager(self)
         self.member_manager = MemberManager(self)
 
+        await bot.change_presence(activity=activity)
         await LOGGER.info("Frostlightbot Online", self)
 
         self.event_updater = self.loop.create_task(self.event_manager.update())
