@@ -95,7 +95,7 @@ class HalloweenLootBagButton(discord.ui.Button):
         await interaction.response.defer()
 
         # Deleting messages to not use much space
-        await asyncio.sleep(30)
+        await asyncio.sleep(15)
         try:
             await info_message.delete()
         except Exception as e:

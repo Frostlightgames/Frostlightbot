@@ -257,7 +257,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
     async def delete_info_message(self,message):
 
         # Deleting messages to not use much space
-        await asyncio.sleep(30)
+        await asyncio.sleep(15)
         try:
             await message.delete()
         except Exception as e:
