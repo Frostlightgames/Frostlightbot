@@ -16,7 +16,7 @@ class HalloweenEvent(Event):
     def __init__(self, bot:FrostlightBot) -> None:
         super().__init__(bot)
         self.lootbag_wait_time = random.randint(1,3)
-        self.slot_machine_wait_time = random.randint(1,3)
+        self.slot_machine_wait_time = random.randint(3,5)
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
