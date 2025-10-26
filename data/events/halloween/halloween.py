@@ -151,7 +151,7 @@ class HalloweenEvent(Event):
         permission = discord.PermissionOverwrite()
         permission.send_messages = True
         permission.read_message_history = True
-        permission.view_channel = False # CHANGE BACK TO TRUE
+        permission.view_channel = False if DEBUG else True
         await self.halloween_text_channel.set_permissions(self.bot.member_role, overwrite=permission)
 
         # Giving everybody an event role
