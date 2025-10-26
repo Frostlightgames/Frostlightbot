@@ -240,7 +240,7 @@ class HalloweenEvent(Event):
 
         # Create a summary of the collected candy
         await LOGGER.info("Creating a summary of the collected candy")
-        await self.bot.member_manager.scan_for_member()
+        self.bot.member_manager.scan_for_member()
         embed = discord.Embed(title=f'🍬Das Event ist vorbei, hier ist die auswertung🍬' , color=0xfa5c07)
         for member in self.bot.member_manager.member_list:
             if self.bot.member_manager.member_list[member].candy > 0:
@@ -289,3 +289,5 @@ class HalloweenEvent(Event):
         await LOGGER.info("Resetting game status")
         activity = discord.Game(name="Frostlightgames")
         await self.bot.change_presence(activity=activity)
+
+        await LOGGER.info("Halloween event ended")
