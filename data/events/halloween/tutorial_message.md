@@ -4,6 +4,10 @@ Heute zwischen **18:00 Uhr und 23:00 Uhr** habt ihr die Chance, **Lootbags** zu 
 * **Lootbags** erscheinen zufällig im Chat.
 * Drückt auf den **„Halloween Snacks“** Button unter der Nachricht, um einen Lootbag einzusammeln.
 * Sobald ein Lootbag geöffnet wurde, haben andere Mitglieder **!BAG_TIMER! Sekunden** Zeit, ebenfalls eine Belohnung zu erhalten.
+* **Spukräder** erscheinen ebenfalls zufällig im Chat.
+* Wähle deinen Einsatz von Süßigkeiten und erhalte dein Ergebnis.
+* Achte auf die Beschreibung des Spukrads, hier ist ein Tipp zu Gewinnwahrscheinlichkeit versteckt.
+* Ein Spukrad erscheint nur für 1 Minute und kann nur ein mal pro Person verwendet werden.
 
 Ab **20:00 Uhr** wird die **Süßigkeitenbelohnung verdoppelt** also seid dabei, wenn es richtig süß wird! 🍭
 ### 🏆 Ziel des Events:
