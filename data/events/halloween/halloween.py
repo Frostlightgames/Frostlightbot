@@ -15,6 +15,7 @@ class HalloweenEvent(Event):
     def __init__(self, bot:FrostlightBot) -> None:
         super().__init__(bot)
         self.lootbag_wait_time = random.randint(1,3)
+        self.slot_machine_wait_time = random.randint(1,3)
         self.halloween_text_channel = None
         self.halloween_chat_category = None
         self.halloween_looter_role = None
@@ -26,6 +27,8 @@ class HalloweenEvent(Event):
         self.halloween_last_loot_bag_message = None
         self.halloween_loot_bag_marked_for_deletion = False
         self.halloween_loot_bag_collected_list = []
+        self.halloween_last_slot_machine_message = None
+        self.halloween_slot_machine_collected_list = []
         self.prepared = False
 
     async def check_event_time(self):
@@ -54,6 +57,7 @@ class HalloweenEvent(Event):
     
     async def prepare(self):
         from data.events.halloween.lootbag.lootbag_collection_button import HalloweenLootBagButton
+        from data.events.halloween.slotmachine.slotmachine_bet_button import HalloweenSlotMachineSelect
         from data.events.halloween.notification.notification_buttons import HalloweenNotifyYesButton, HalloweenNotifyNoButton
 
         await LOGGER.info("Preparing halloween event")
@@ -125,7 +129,10 @@ class HalloweenEvent(Event):
             self.halloween_loot_bag_view = discord.ui.View(timeout=None)
             self.halloween_loot_bag_view.add_item(item=HalloweenLootBagButton(self.bot,self))
             self.bot.add_view(view=self.halloween_loot_bag_view)
-
+            self.halloween_slot_machine_view = discord.ui.View(timeout=None)
+            self.halloween_slot_machine_view.add_item(item=HalloweenSlotMachineSelect(self.bot,self))
+            self.bot.add_view(view=self.halloween_slot_machine_view)
+            
             # All clear check
             if self.halloween_chat_category != None and self.halloween_looter_role != None and self.halloween_text_channel != None and self.halloween_reward_role != None and self.halloween_notification_view != None and self.halloween_loot_bag_view != None:
                 self.prepared = True
@@ -186,8 +193,31 @@ class HalloweenEvent(Event):
 
     async def update(self):
         from data.events.halloween.lootbag.generate_lootbag import generate_loot_bag
+        from data.events.halloween.slotmachine.generate_slotmachine import generate_slot_machine
+
+        if self.halloween_last_slot_machine_message == None:
+
+            # Count down time sub events
+            self.slot_machine_wait_time = max(0,self.slot_machine_wait_time-1)
+
+            if self.slot_machine_wait_time == 0:
+                
+                # Dont generate together with loot bag
+                if self.lootbag_wait_time > 1:
+                    await LOGGER.info(f"Generating slot machine")
+                    await generate_slot_machine(self)
+
+                    # Set new time for slot machine to appear
+                    self.slot_machine_wait_time = random.randint(10,15)
+                else:
+                    await LOGGER.info("Slot machine is blocked by a loot bag generation")
+            else:
+                await LOGGER.info(f"Next slot machine in {self.slot_machine_wait_time} minutes")
+        else:
+            await LOGGER.info("Slot machine still present, no new slot machine will be generated")
 
         if self.halloween_last_loot_bag_message == None:
+
             # Count down time sub events
             self.lootbag_wait_time = max(0,self.lootbag_wait_time-1)
             
@@ -200,7 +230,6 @@ class HalloweenEvent(Event):
                 self.lootbag_wait_time = random.randint(2,7)
             else:
                 await LOGGER.info(f"Next lootbag in {self.lootbag_wait_time} minutes")
-            
         else:
             await LOGGER.info("Lootbag still present, no new lootbag will be generated")
 
