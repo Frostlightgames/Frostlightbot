@@ -5,8 +5,9 @@ import textwrap
 import datetime
 
 from main import FrostlightBot
-from data.classes.logger import LOGGER
 from data.classes.member import Member
+from data.classes.logger import LOGGER
+from data.classes.database import DATABASE
 from data.events.halloween.halloween import HalloweenEvent, SWEETS_GOAL
 
 STATE_PROBABILITIES = {
@@ -83,6 +84,9 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
             state = getattr(self.view, "state", 5)
             member = self.bot.member_manager.get(interaction.user.id)
 
+            member_free_spins = int(DATABASE.get_config(f"halloween_free_spins_{member.name}","0"))
+            free_spin = False
+
             # Getting bet from embed
             if "25" in selection:
                 bet = 25
@@ -92,9 +96,15 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
                 bet = 1
 
             # Not enough candy to play
-            if member.candy < bet:
+            if member.candy < bet and member_free_spins == 0:
                 return await self.send_not_enough_sweets_message(interaction, member)
-
+            
+            # Free spins
+            if member_free_spins > 0:
+                member_free_spins -= 1
+                free_spin = True
+                DATABASE.set_config(f"halloween_free_spins_{member.name}",str(member_free_spins))
+                    
             self.event.halloween_slot_machine_collected_list.append(interaction.user.id)
             
             # Calculate result
@@ -104,10 +114,11 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
             if result == "lose":
 
                 # Making sure to not loose to much
-                if member.candy >= 100:
-                    member.candy = max(100,member.candy - bet)
-                else:
-                    member.candy = max(0,member.candy - bet)
+                if not free_spin:
+                    if member.candy >= 100:
+                        member.candy = max(100,member.candy - bet)
+                    else:
+                        member.candy = max(0,member.candy - bet)
 
                 await self.send_loose_message(interaction, bet, member)
             
