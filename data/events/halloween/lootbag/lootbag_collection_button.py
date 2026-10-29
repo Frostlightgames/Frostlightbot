@@ -37,8 +37,8 @@ class HalloweenLootBagButton(discord.ui.Button):
             candy = random.randint(3,10)
             coins = random.randint(2,5)
 
-            # Generating double candy after 20:00
-            if datetime.datetime.now().hour >= 20:
+            # Generating double candy after 18:00
+            if datetime.datetime.now().hour >= 18:
                 candy += 2
 
             # Applying reward

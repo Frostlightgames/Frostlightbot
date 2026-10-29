@@ -34,7 +34,7 @@ class HalloweenEvent(Event):
 
     async def check_event_time(self):
         
-        # Halloween Event at 31.10 from 18:00 to 23:00
+        # Halloween Event at 31.10 from 14:00 to 23:00
 
         # Check for halloween date
         if datetime.datetime.now().date().strftime("%d-%m") == "31-10" or DEBUG:
@@ -51,9 +51,9 @@ class HalloweenEvent(Event):
     
     def check_event_time_window(self):
 
-        # Halloween Event at 31.10 from 18:00 to 23:00
+        # Halloween Event at 31.10 from 14:00 to 23:00
         now = datetime.datetime.now()
-        return (now.date().strftime("%d-%m") == "31-10" and now.hour >= 18 and now.hour <= 22) or DEBUG
+        return (now.date().strftime("%d-%m") == "31-10" and now.hour >= 14 and now.hour <= 22) or DEBUG
     
     async def prepare(self):
         from data.events.halloween.lootbag.lootbag_collection_button import HalloweenLootBagButton
