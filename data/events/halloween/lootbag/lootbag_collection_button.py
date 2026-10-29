@@ -39,7 +39,7 @@ class HalloweenLootBagButton(discord.ui.Button):
 
             # Generating double candy after 18:00
             if datetime.datetime.now().hour >= 18:
-                candy += 2
+                candy *= 2
 
             # Applying reward
             member = self.bot.member_manager.get(interaction.user.id)
