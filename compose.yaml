@@ -1,0 +1,9 @@
+services:
+    frostlightbot:
+        build: .
+        container_name: frostlightbot
+        env_file:
+            - .env
+        volumes:
+            - .:/bot
+        restart: unless-stopped
