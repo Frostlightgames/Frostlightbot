@@ -17,5 +17,10 @@ Die Rolle wird **nach dem Ende des Events** an alle erfolgreichen Sammler vertei
 ### 💬 **Tauscht euch im Chat aus!**
 Teilt eure **Halloween-Stories**, zeigt eure **Kostüme** oder feiert einfach gemeinsam mit uns! 🎉
 Wenn ihr dieses Jahr keine Zeit habt oder das Ziel nicht erreicht, kein Problem! Das Event kehrt **nächstes Jahr** wieder zurück.
+### 📰 Neuigkeiten dieses Jahr:
+* **Trick or Treat**, Klaut von anderen Süßigkeiten, indem ihr /trickortreat in den Chat eingebt.
+* **Süßigkeiten fürs Interagieren**, durch Interaktionen im Chat bekommt ihr nun Süßigkeiten.
+* **Frühere Eventzeit**, aufgrund von Feedbacks des letzten Jahren, wurde dass event 4 Stunden verlängert und startet früher.
+* **Vereinfachte Spukräder**, diese wurden vereinfacht und haben auch weniger Text.
 
 🕸️ **Frohes Sammeln und Happy Halloween!** 🎃
