@@ -53,7 +53,7 @@ bot = FrostlightBot()
 slash = discord.app_commands.CommandTree(bot)
 
 # Default commands
-register_stop_command()
+register_stop_command(slash, bot)
 
 # Halloween commands
 register_freespin_command(slash, bot)
