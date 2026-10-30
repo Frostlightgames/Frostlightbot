@@ -11,15 +11,16 @@ from data.classes.database import DATABASE
 from data.events.halloween.halloween import HalloweenEvent, SWEETS_GOAL
 
 STATE_PROBABILITIES = {
+    # Lose None Win
     0: [80, 15, 5],
-    1: [75, 18, 7],
-    2: [70, 20, 10],
-    3: [55, 30, 15],
-    4: [45, 35, 20],
-    5: [40, 35, 25],
-    6: [35, 35, 30],
-    7: [30, 40, 30],
-    8: [25, 40, 35],
+    1: [80, 15, 5],
+    2: [50, 30, 20],
+    3: [50, 30, 20],
+    4: [30, 40, 30],
+    5: [30, 40, 30],
+    6: [20, 35, 45],
+    7: [20, 35, 45],
+    8: [10, 40, 50],
     9: [0, 5, 95],
 }
 
