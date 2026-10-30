@@ -21,7 +21,7 @@ class HalloweenEvent(Event):
         self.halloween_chat_category = None
         self.halloween_looter_role = None
         self.halloween_reward_role = None
-        self.halloween_notification_title_text = "**Es ist Halloween und hier könnt ihr nun Süßigkeiten sammeln. Wenn ihr jedoch keine Benachrichtigungen bekommen wollt, stellt dies hier ein!**"
+        self.halloween_notification_title_text = "**Es ist Halloween. Wenn ihr keine Benachrichtigungen zum Event bekommen wollt, stellt dies hier ein!**"
         self.halloween_notification_embed = None
         self.halloween_notification_view = None
         self.halloween_loot_bag_view = None
@@ -56,6 +56,7 @@ class HalloweenEvent(Event):
         return (now.date().strftime("%d-%m") == "31-10" and now.hour >= 14 and now.hour <= 22) or DEBUG
     
     async def prepare(self):
+        from data.events.halloween.tutorial.tutorial_button import HalloweenEventTutorialButton
         from data.events.halloween.lootbag.lootbag_collection_button import HalloweenLootBagButton
         from data.events.halloween.slotmachine.slotmachine_bet_button import HalloweenSlotMachineSelect
         from data.events.halloween.notification.notification_buttons import HalloweenNotifyYesButton, HalloweenNotifyNoButton
@@ -125,6 +126,7 @@ class HalloweenEvent(Event):
             self.halloween_notification_view = discord.ui.View(timeout=None)
             self.halloween_notification_view.add_item(item=HalloweenNotifyYesButton(self))
             self.halloween_notification_view.add_item(item=HalloweenNotifyNoButton(self))
+            self.halloween_notification_view.add_item(item=HalloweenEventTutorialButton(self))
             self.bot.add_view(view=self.halloween_notification_view)
             self.halloween_loot_bag_view = discord.ui.View(timeout=None)
             self.halloween_loot_bag_view.add_item(item=HalloweenLootBagButton(self.bot,self))
@@ -172,20 +174,20 @@ class HalloweenEvent(Event):
             await channel.send(self.bot.member_role.mention,embed=embed)
             DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message",True)
 
-        # Send tutorial message
-        await LOGGER.info("Sending tutorial message")
-        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_tutorial_message", False):
-            with open(os.path.join("data","events","halloween","tutorial_message.md"),"r",encoding="utf-8") as f:
+        # Send welcome message
+        await LOGGER.info("Sending welcome message")
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_welcome_message", False):
+            with open(os.path.join("data","events","halloween","welcome_message.md"),"r",encoding="utf-8") as f:
                 content = f.read()
                 f.close()
-            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now().year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}")
-            DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_tutorial_message",True)
+            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now().year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}",view=self.halloween_tutorial_view)
+            DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_welcome_message",True)
 
         # Sending notification option embed
         await LOGGER.info("Sending notification option embed")
         if self.halloween_notification_embed == None:
             embed = discord.Embed(title=self.halloween_notification_title_text, color=0xfa5c07)
-            embed.add_field(name="Beschreibung:",value="Hier kannst du entscheiden, ob du Benachrichtigungen erhalten willst!")
+            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
             thumbnail = discord.File(os.path.join("data","images","halloweenbell.png"), filename='halloweenbell.png')  
             embed.set_thumbnail(url="attachment://halloweenbell.png")
             embed = await self.halloween_text_channel.send(file=thumbnail,embed=embed,view=self.halloween_notification_view)

@@ -1,5 +1,5 @@
 # 🎃 Willkommen zum **Frostlightgames Halloween Event !YEAR!!** 👻
-Heute zwischen **14:00 Uhr und 23:00 Uhr** habt ihr die Chance, **Lootbags** zu öffnen und dabei **Münzen** sowie **Süßigkeiten** zu sammeln! 🍬💰
+Heute zwischen **14:00 Uhr und 23:00 Uhr** habt ihr die Chance, **Münzen** sowie **Süßigkeiten** zu sammeln! 🍬💰
 ### So funktionierts:
 * **Interagiert** im Chat, schreibt Nachrichten, hängt Emojis an oder postet eure Halloween Stories um **Süßigkeiten** zu verdienen.
 * **Lootbags** erscheinen zufällig im Chat.
