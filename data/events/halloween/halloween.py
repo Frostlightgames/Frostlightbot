@@ -180,7 +180,7 @@ class HalloweenEvent(Event):
             with open(os.path.join("data","events","halloween","welcome_message.md"),"r",encoding="utf-8") as f:
                 content = f.read()
                 f.close()
-            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now().year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}",view=self.halloween_tutorial_view)
+            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now().year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}")
             DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_welcome_message",True)
 
         # Sending notification option embed
