@@ -44,7 +44,7 @@ class HalloweenEvent(Event):
                 await self.prepare()
 
             # Main halloween event
-            if (datetime.datetime.now().hour >= 18 and datetime.datetime.now().hour <= 22) or DEBUG:
+            if (datetime.datetime.now().hour >= 14 and datetime.datetime.now().hour <= 22) or DEBUG:
                 return True
             
         return await super().check_event_time()
