@@ -12,6 +12,13 @@ from data.classes.database import DATABASE
 from data.classes.event_manager import *
 from data.classes.member_manager import *
 
+from data.commands.stop import register_stop_command
+from data.events.halloween.commands.freespin import register_freespin_command
+from data.events.halloween.commands.endhalloween import register_endhalloween_command
+from data.events.halloween.commands.trick_or_treat import register_trick_or_treat_command
+
+from data.events.halloween.cogs.interaction_listener import HalloweenCogInteractionListener
+
 init()
 
 class FrostlightBot(discord.Client):
@@ -23,12 +30,14 @@ class FrostlightBot(discord.Client):
         self.event_manager = None
         self.member_manager = None
         
+        self.halloween_listener = HalloweenCogInteractionListener(self)
+        
     async def on_ready(self):
         await self.wait_until_ready()
         if not self.synced:
             await slash.sync(guild=discord.Object(id=self.guild_id))
             self.synced = True
-
+        
         self.guild = await self.fetch_guild(self.guild_id)
         self.general_text_channel = await self.guild.fetch_channel(DATABASE.get_config("main_channel_id"))
         self.sandbox_text_channel = await self.guild.fetch_channel(DATABASE.get_config("sandbox_channel_id"))
@@ -42,80 +51,22 @@ class FrostlightBot(discord.Client):
         await LOGGER.info("Frostlightbot Online", self)
 
         self.event_updater = self.loop.create_task(self.event_manager.update())
+        
+    async def on_message(self, message: discord.Message):
+        await self.halloween_listener.on_message(message)
 
 token = os.getenv("TOKEN")
 activity = discord.Game(name="Frostlightgames")
 bot = FrostlightBot()
 slash = discord.app_commands.CommandTree(bot)
 
-@slash.command(name="stop",description="[Moderation] Stopt den Frostlightbot",guild=discord.Object(id=670321104866377748))
-async def stop_command(interaction:discord.Integration):
-    admin = False
-    for role in interaction.user.roles:
-        if role.id in [1010668967913861192]:
-            admin = True
-            break
+# Default commands
+register_stop_command(slash, bot)
 
-    now = datetime.datetime.now()
-    timestamp = now.strftime("[%d.%m.%Y %H:%M]")
-
-    if admin:
-        embed = discord.Embed(title="Bot Stop", color=0x000000)
-        embed.add_field(name=f"Gestoppt von {interaction.user.name}",value=timestamp,inline=True)
-        await bot.log_text_channel.send(embed=embed)
-
-        embed = discord.Embed(title="Frostlightbot wurde gestoppt", color=0x262626)
-        embed.set_footer(text=timestamp)
-        await interaction.response.send_message(embed=embed)
-
-        await bot.close()
-    else:
-        embed = discord.Embed(title="Keine Berechtigung für diesen Befehl", color=0x262626)
-        embed.set_footer(text=timestamp)
-        await interaction.response.send_message(embed=embed)
-
-@slash.command(name="freespin",description="[gamex] Vergibt gratis Spukraddrehs",guild=discord.Object(id=670321104866377748))
-async def free_spin_command(interaction:discord.Integration, name:str="", amount:int=1):
-    
-    now = datetime.datetime.now()
-    timestamp = now.strftime("[%d.%m.%Y %H:%M]")
-
-    if interaction.user.id == 465412731709816853:
-
-        DATABASE.set_config(f"halloween_free_spins_{name}",str(amount))
-
-        member = bot.member_manager.get(name=name)
-        await bot.get_user(member.uid).send(f"Dir wurden {amount} gratis Spukraddrehs für das Halloween Event {now.year} geschenkt.")
-
-        embed = discord.Embed(title="Gratis Spukraddrehs", color=0x000000)
-        embed.add_field(name=f"{amount} Gratis Spukraddrehs wurden an {name}",value=timestamp,inline=True)
-        await bot.log_text_channel.send(embed=embed)
-
-        embed = discord.Embed(title="Gratis Spukraddrehs wurden vergeben.", color=0x262626)
-        embed.set_footer(text=timestamp)
-        await interaction.response.send_message(embed=embed)
-    else:
-        embed = discord.Embed(title="Keine Berechtigung für diesen Befehl", color=0x262626)
-        embed.set_footer(text=timestamp)
-        await interaction.response.send_message(embed=embed)
-
-@slash.command(name="endhalloween",description="[gamex] Endet das diesjährige Halloween Event",guild=discord.Object(id=670321104866377748))
-async def free_spin_command(interaction:discord.Integration):
-    
-    now = datetime.datetime.now()
-    timestamp = now.strftime("[%d.%m.%Y %H:%M]")
-
-    if interaction.user.id == 465412731709816853:
-
-        await bot.event_manager.events[0].end()
-
-        embed = discord.Embed(title="gamexdifficulty hat das Halloween Event beendet.", color=0x000000)
-        await bot.log_text_channel.send(embed=embed)
-
-    else:
-        embed = discord.Embed(title="Keine Berechtigung für diesen Befehl", color=0x262626)
-        embed.set_footer(text=timestamp)
-        await interaction.response.send_message(embed=embed)
+# Halloween commands
+register_freespin_command(slash, bot)
+register_endhalloween_command(slash, bot)
+register_trick_or_treat_command(slash, bot)
 
 if __name__ == "__main__":
     try:
