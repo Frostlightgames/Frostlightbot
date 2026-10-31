@@ -140,7 +140,6 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
     async def send_already_played_message(self, interaction: discord.Interaction):
 
         # Already played
-        await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f"🚫 Du hast hast bereits an diesem Spukrad gespielt! Warte bis das nächste kommt." , color=0xfa5c07)
         embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -148,7 +147,6 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
     async def send_not_enough_sweets_message(self, interaction: discord.Interaction, member: Member):
 
         # Not enough sweets
-        await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f"🚫 Du hast nur {member.candy} Süßigkeiten, **nicht genug** für diesen Einsatz!" , color=0xfa5c07)
         embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await interaction.response.send_message(embed=embed, ephemeral=True)
