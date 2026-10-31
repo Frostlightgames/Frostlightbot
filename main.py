@@ -15,6 +15,7 @@ from data.classes.member_manager import *
 from data.commands.stop import register_stop_command
 from data.events.halloween.commands.freespin import register_freespin_command
 from data.events.halloween.commands.endhalloween import register_endhalloween_command
+from data.events.halloween.commands.trick_or_treat import register_trick_or_treat_command
 
 init()
 
@@ -58,6 +59,7 @@ register_stop_command(slash, bot)
 # Halloween commands
 register_freespin_command(slash, bot)
 register_endhalloween_command(slash, bot)
+register_trick_or_treat_command(slash, bot)
 
 if __name__ == "__main__":
     try:
