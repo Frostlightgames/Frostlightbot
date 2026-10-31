@@ -5,6 +5,7 @@ Heute zwischen **14:00 Uhr und 23:00 Uhr** habt ihr die Chance, **Münzen** sowi
 * **Lootbags** erscheinen zufällig im Chat.
 * Drückt auf den **„Halloween Snacks“** Button unter der Nachricht, um einen Lootbag einzusammeln.
 * Sobald ein Lootbag geöffnet wurde, haben andere Mitglieder **!BAG_TIMER! Sekunden** Zeit, ebenfalls eine Belohnung zu erhalten.
+* **Süßes oder Saures**, klaut mit dem /süßes-oder-saures Befehl Süßigkeiten von anderen.
 * **Spukräder** erscheinen ebenfalls zufällig im Chat.
 * Wähle deinen Einsatz von Süßigkeiten und erhalte dein Ergebnis.
 * Achte auf die Beschreibung des Spukrads, hier ist ein Tipp zu Gewinnwahrscheinlichkeit versteckt.
@@ -18,7 +19,7 @@ Die Rolle wird **nach dem Ende des Events** an alle erfolgreichen Sammler vertei
 Teilt eure **Halloween-Stories**, zeigt eure **Kostüme** oder feiert einfach gemeinsam mit uns! 🎉
 Wenn ihr dieses Jahr keine Zeit habt oder das Ziel nicht erreicht, kein Problem! Das Event kehrt **nächstes Jahr** wieder zurück.
 ### 📰 Neuigkeiten dieses Jahr:
-* **Trick or Treat**, Klaut von anderen Süßigkeiten, indem ihr /trickortreat in den Chat eingebt.
+* **Süßes oder Saures**, Klaut von anderen Süßigkeiten, indem ihr /süßes-oder-saures in den Chat eingebt.
 * **Süßigkeiten fürs Interagieren**, durch Interaktionen im Chat bekommt ihr nun Süßigkeiten.
 * **Frühere Eventzeit**, aufgrund von Feedbacks des letzten Jahren, wurde dass event 4 Stunden verlängert und startet früher.
 * **Vereinfachte Spukräder**, diese wurden vereinfacht und haben auch weniger Text.
