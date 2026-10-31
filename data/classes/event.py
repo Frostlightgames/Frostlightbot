@@ -1,4 +1,7 @@
-from main import FrostlightBot
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from main import FrostlightBot
 
 class Event:
     def __init__(self,bot:FrostlightBot):

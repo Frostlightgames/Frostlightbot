@@ -3,10 +3,14 @@ import random
 import discord
 import datetime
 
-from main import FrostlightBot
+from typing import TYPE_CHECKING
 from data.classes.event import Event
 from data.classes.logger import LOGGER
 from data.classes.database import DATABASE
+
+
+if TYPE_CHECKING:
+    from main import FrostlightBot
 
 DEBUG = True
 SWEETS_GOAL = 100
