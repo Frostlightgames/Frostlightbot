@@ -1,5 +1,4 @@
-FROM python:latest
-FROM gorialis/discord.py
+FROM python:3.14-slim
 
 WORKDIR /bot
 
