@@ -4,6 +4,7 @@ import discord
 import textwrap
 import datetime
 
+from zoneinfo import ZoneInfo
 from main import FrostlightBot
 from data.classes.logger import LOGGER
 from data.classes.member import Member
@@ -13,16 +14,16 @@ class HalloweenLootBagButton(discord.ui.Button):
     def __init__(self,bot:FrostlightBot,event:HalloweenEvent):
         self.bot = bot
         self.event = event
-        self.year = datetime.datetime.now().year
+        self.year = datetime.datetime.now(ZoneInfo("Europe/Berlin")).year
 
-        super().__init__(style=discord.ButtonStyle.blurple, label="Halloween Snacks",custom_id=f"HalloweenLootBagButton{datetime.datetime.now().year}")
+        super().__init__(style=discord.ButtonStyle.blurple, label="Halloween Snacks",custom_id=f"HalloweenLootBagButton{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}")
 
     async def callback(self, interaction: discord.Interaction):
 
         # Event is over
-        if not self.event.check_event_time_window() or self.year != datetime.datetime.now().year:
+        if not self.event.check_event_time_window() or self.year != datetime.datetime.now(ZoneInfo("Europe/Berlin")).year:
             embed = discord.Embed(title=f"Das Event für dieses Jahr ist bereits vorbei" , color=0xfa5c07)
-            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+            embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
             return await interaction.response.send_message(embed=embed,ephemeral=True)
         
         # Member already collected this reward
@@ -38,7 +39,7 @@ class HalloweenLootBagButton(discord.ui.Button):
             coins = random.randint(2,5)
 
             # Generating double candy after 18:00
-            if datetime.datetime.now().hour >= 18:
+            if datetime.datetime.now(ZoneInfo("Europe/Berlin")).hour >= 18:
                 candy *= 2
 
             # Applying reward
@@ -71,7 +72,7 @@ class HalloweenLootBagButton(discord.ui.Button):
         # Sweets goal reached
         await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f'👻🎃🦇 **{interaction.user.name} hat das Süßigkeiten Ziel erreicht!** 🦇🎃👻' , color=0xfa5c07)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
 
@@ -93,7 +94,7 @@ class HalloweenLootBagButton(discord.ui.Button):
                 **Sammelstatus:** `{member.candy}/{SWEETS_GOAL}`
                 `{bar}` {percent}%""")
         embed.set_thumbnail(url="attachment://candybag.png")
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         info_message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
 
@@ -108,7 +109,7 @@ class HalloweenLootBagButton(discord.ui.Button):
 
         # Sweets goal already reached
         embed = discord.Embed(title=f"Du hast bereits {member.candy} Süßigkeiten gesammelt, aber hör nicht auf mit sammeln! 🍬" , color=0xfa5c07)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await interaction.response.send_message(embed=embed,ephemeral=True)
 
     async def delete_loot_bag_embed(self, interaction: discord.Interaction):

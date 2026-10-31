@@ -3,6 +3,7 @@ import datetime
 
 from main import *
 from data.classes.logger import LOGGER
+from zoneinfo import ZoneInfo
 
 from data.events.halloween.halloween import  HalloweenEvent
 
@@ -25,6 +26,6 @@ class EventManager:
                         if event.has_started:
                             await event.end()
 
-                await asyncio.sleep(60-datetime.datetime.now().second)
+                await asyncio.sleep(60-datetime.datetime.now(ZoneInfo("Europe/Berlin")).second)
             except Exception as e:
                 await LOGGER.error(f"Error while running event loops: | {e}", self.bot)

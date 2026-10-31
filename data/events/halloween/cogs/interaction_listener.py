@@ -1,6 +1,7 @@
 import discord
 import datetime
 
+from zoneinfo import ZoneInfo
 from typing import TYPE_CHECKING
 from discord.ext import commands
 from data.classes.database import DATABASE
@@ -30,7 +31,7 @@ class HalloweenCogInteractionListener(commands.Cog):
             return
 
         uid = str(message.author.id)
-        now = int(datetime.datetime.now().timestamp())
+        now = int(datetime.datetime.now(ZoneInfo("Europe/Berlin")).timestamp())
 
         cooldown_key = f"halloween_event_2026_{uid}_last_interaction"
         last_interaction = int(DATABASE.get_config(cooldown_key, 0))

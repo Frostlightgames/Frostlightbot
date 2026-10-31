@@ -1,6 +1,7 @@
 import random
 import discord
 import datetime
+from zoneinfo import ZoneInfo
 from typing import TYPE_CHECKING
 from data.classes.logger import LOGGER
 from data.classes.database import DATABASE
@@ -25,7 +26,7 @@ class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
             if bot.member_manager.member_list[member].uid == DATABASE.get_config(f"halloween_event_2026_{self.member.uid}_trick_or_treat_last_steal", ""):
                 continue
             
-            if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{bot.member_manager.member_list[member].uid}_trick_or_treat_steal_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now():
+            if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{bot.member_manager.member_list[member].uid}_trick_or_treat_steal_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
                 continue
             
             if bot.member_manager.member_list[member].candy >= 5:
@@ -46,7 +47,7 @@ class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
         if selected_member.uid == DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_last_steal", ""):
             return await self.error(interaction, "Du hast dein Ziel bereits zuletzt beklaut 👻")
         
-        if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now():
+        if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
             return await self.error(interaction, f"Du kannst diesen Befehl erst wieder <t:{int(datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")).timestamp())}:R> ausführen 👻")
         
         if selected_member.candy < 5:
@@ -57,17 +58,17 @@ class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
         else:
             selected_member.candy = max(0,selected_member.candy - stolen_candy)
             
-        DATABASE.set_config(f"halloween_event_2026_{selected_member.uid}_trick_or_treat_steal_cooldown", datetime.datetime.now()+datetime.timedelta(minutes=15))
+        DATABASE.set_config(f"halloween_event_2026_{selected_member.uid}_trick_or_treat_steal_cooldown", datetime.datetime.now(ZoneInfo("Europe/Berlin"))+datetime.timedelta(minutes=15))
         
         old_candy_amount = stealer_member.candy
         stealer_member.candy += stolen_candy
-        DATABASE.set_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", datetime.datetime.now()+datetime.timedelta(minutes=30))
+        DATABASE.set_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", datetime.datetime.now(ZoneInfo("Europe/Berlin"))+datetime.timedelta(minutes=30))
         DATABASE.set_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_last_steal", selected_member.uid)
         
         if old_candy_amount < SWEETS_GOAL and old_candy_amount + stolen_candy >= SWEETS_GOAL:
             # Reached Goal
             embed = discord.Embed(title=f'👻🎃🦇 **{interaction.user.name} hat das Süßigkeiten Ziel erreicht!** 🦇🎃👻' , color=0xfa5c07)
-            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+            embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
             await self.bot.event_manager.events[0].halloween_text_channel.send(embed=embed)
             await interaction.response.defer()
         else:
@@ -82,13 +83,13 @@ class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
                 {selected_member.name} klau sie dir zurück!
                 **Sammelstatus:** `{stealer_member.candy}/{SWEETS_GOAL}`
                 `{bar}` {percent}%"""
-            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+            embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
             await self.bot.event_manager.events[0].halloween_text_channel.send(embed=embed, delete_after=5*60)
             await interaction.response.defer()
     
     async def error(self, interaction: discord.Interaction, message: str):
         embed = discord.Embed(title=message, color=0x262626)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         return await interaction.response.send_message(embed=embed,ephemeral=True)
 
     async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:

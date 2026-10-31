@@ -3,6 +3,7 @@ import random
 import discord
 import asyncio
 import datetime
+from zoneinfo import ZoneInfo
 
 from data.events.halloween.halloween import HalloweenEvent
 
@@ -28,9 +29,9 @@ async def generate_slot_machine(event: HalloweenEvent):
 
     # Sending slot machine
     embed = discord.Embed(title="🎰 Das Spukrad der Süßigkeiten erwacht! 🎰",color=0xfa5c07)
-    embed.description = f"Das Spukrad verschwindet <t:{int((datetime.datetime.now()+datetime.timedelta(minutes=1)).timestamp())}:R>"
+    embed.description = f"Das Spukrad verschwindet <t:{int((datetime.datetime.now(ZoneInfo("Europe/Berlin"))+datetime.timedelta(minutes=1)).timestamp())}:R>"
     embed.add_field(name="Beschreibung",value=hint_text)
-    embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+    embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
     embed.set_thumbnail(url="attachment://slotmachine.png")
     thumbnail = discord.File(os.path.join("data", "images", "slotmachine.png"), filename="slotmachine.png")
     embed = await event.halloween_text_channel.send(event.halloween_looter_role.mention,file=thumbnail,embed=embed,view=event.halloween_slot_machine_view)

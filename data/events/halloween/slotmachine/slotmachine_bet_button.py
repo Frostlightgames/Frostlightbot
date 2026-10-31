@@ -4,6 +4,7 @@ import discord
 import textwrap
 import datetime
 
+from zoneinfo import ZoneInfo
 from main import FrostlightBot
 from data.classes.member import Member
 from data.classes.logger import LOGGER
@@ -34,9 +35,9 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
     def __init__(self,bot:FrostlightBot,event:HalloweenEvent):
         self.bot = bot
         self.event = event
-        self.year = datetime.datetime.now().year
+        self.year = datetime.datetime.now(ZoneInfo("Europe/Berlin")).year
 
-        super().__init__(placeholder="Wähle deinen Einsatz... 🎰",min_values=1,max_values=1,custom_id=f"HalloweenSlotMachine{datetime.datetime.now().year}",
+        super().__init__(placeholder="Wähle deinen Einsatz... 🎰",min_values=1,max_values=1,custom_id=f"HalloweenSlotMachine{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}",
             options = [
                 discord.SelectOption(label="(1) Ein Bonbon", description="Ein kleiner Biss ins Unbekannte...", emoji="🍬"),
                 discord.SelectOption(label="(10) Eine Hand voll Süßigkeiten", description="Mutig ... das Spukrad dreht sich...", emoji="🍫"),
@@ -58,9 +59,9 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
 
         # Event is over
-        if not self.event.check_event_time_window() or self.year != datetime.datetime.now().year:
+        if not self.event.check_event_time_window() or self.year != datetime.datetime.now(ZoneInfo("Europe/Berlin")).year:
             embed = discord.Embed(title=f"Das Event für dieses Jahr ist bereits vorbei" , color=0xfa5c07)
-            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+            embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
             return await interaction.response.send_message(embed=embed,ephemeral=True)
         
         # Member already played at this slot machine
@@ -141,7 +142,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
         # Already played
         await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f"🚫 Du hast hast bereits an diesem Spukrad gespielt! Warte bis das nächste kommt." , color=0xfa5c07)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
     async def send_not_enough_sweets_message(self, interaction: discord.Interaction, member: Member):
@@ -149,7 +150,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
         # Not enough sweets
         await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f"🚫 Du hast nur {member.candy} Süßigkeiten, **nicht genug** für diesen Einsatz!" , color=0xfa5c07)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
     async def send_reached_goal_message(self, interaction: discord.Interaction, bet: int, member: Member):
@@ -158,7 +159,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
         await interaction.user.add_roles(self.event.halloween_reward_role)
         embed = discord.Embed(title=f"🎉👻 {interaction.user.name} hat das Süßigkeiten-Ziel erreicht! 🍬🏆",color=0xfa5c07)
         embed.description = textwrap.dedent(f"Deine **{bet}** eingesetzten Süßigkeiten haben dich direkt ans Ziel gebracht! 🎃✨")
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
 
@@ -177,7 +178,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
             **Aktueller Süßigkeitenstand:** `{member.candy}`  
             `{bar}` {percent}%
         """)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
         await self.delete_info_message(message)
@@ -192,7 +193,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
             Dein Einsatz von **{bet}** Süßigkeiten zahlt sich weiter aus.  
             **Aktueller Süßigkeitenstand:** `{member.candy}/{SWEETS_GOAL}`  
         """)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
         await self.delete_info_message(message)
@@ -212,7 +213,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
             **Aktueller Süßigkeitenstand:** `{member.candy}`  
             `{bar}` {percent}%
         """)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
         await self.delete_info_message(message)
@@ -232,7 +233,7 @@ class HalloweenSlotMachineSelect(discord.ui.Select):
             **Aktueller Süßigkeitenstand:** `{member.candy}`  
             `{bar}` {percent}%
         """)
-        embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+        embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
         message = await self.event.halloween_text_channel.send(embed=embed)
         await interaction.response.defer()
         await self.delete_info_message(message)

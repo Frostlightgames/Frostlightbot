@@ -1,5 +1,6 @@
 import discord
 import datetime
+from zoneinfo import ZoneInfo
 
 def register_stop_command(slash, bot):
     @slash.command(name="stop",description="[Moderation] Stopt den Frostlightbot",guild=discord.Object(id=670321104866377748))
@@ -10,7 +11,7 @@ def register_stop_command(slash, bot):
                 admin = True
                 break
 
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(ZoneInfo("Europe/Berlin"))
         timestamp = now.strftime("[%d.%m.%Y %H:%M]")
 
         if admin:

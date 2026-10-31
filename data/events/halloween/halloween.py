@@ -3,6 +3,7 @@ import random
 import discord
 import datetime
 
+from zoneinfo import ZoneInfo
 from typing import TYPE_CHECKING
 from data.classes.event import Event
 from data.classes.logger import LOGGER
@@ -41,14 +42,14 @@ class HalloweenEvent(Event):
         # Halloween Event at 31.10 from 14:00 to 23:00
 
         # Check for halloween date
-        if datetime.datetime.now().date().strftime("%d-%m") == "31-10" or DEBUG:
+        if datetime.datetime.now(ZoneInfo("Europe/Berlin")).date().strftime("%d-%m") == "31-10" or DEBUG:
 
             # Pre event checkups and preparation, the day of the event
-            if ((datetime.datetime.now().hour >= 0 and datetime.datetime.now().hour <= 22) or DEBUG) and self.prepared == False:
+            if ((datetime.datetime.now(ZoneInfo("Europe/Berlin")).hour >= 0 and datetime.datetime.now(ZoneInfo("Europe/Berlin")).hour <= 22) or DEBUG) and self.prepared == False:
                 await self.prepare()
 
             # Main halloween event
-            if (datetime.datetime.now().hour >= 14 and datetime.datetime.now().hour <= 22) or DEBUG:
+            if (datetime.datetime.now(ZoneInfo("Europe/Berlin")).hour >= 14 and datetime.datetime.now(ZoneInfo("Europe/Berlin")).hour <= 22) or DEBUG:
                 return True
             
         return await super().check_event_time()
@@ -56,7 +57,7 @@ class HalloweenEvent(Event):
     def check_event_time_window(self):
 
         # Halloween Event at 31.10 from 14:00 to 23:00
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(ZoneInfo("Europe/Berlin"))
         return (now.date().strftime("%d-%m") == "31-10" and now.hour >= 14 and now.hour <= 22) or DEBUG
     
     async def prepare(self):
@@ -78,7 +79,7 @@ class HalloweenEvent(Event):
             await LOGGER.info("Searching for halloween text channel and checking if it already exists")
             for channel in halloween_channels:
                 if channel.category_id != None and channel.category_id == self.halloween_chat_category.id:
-                    if channel.name.split("-")[1] == str(datetime.datetime.now().year):
+                    if channel.name.split("-")[1] == str(datetime.datetime.now(ZoneInfo("Europe/Berlin")).year):
                         self.halloween_text_channel = channel
                     else:
 
@@ -96,7 +97,7 @@ class HalloweenEvent(Event):
                 permission.send_messages = False
                 permission.read_message_history = True
                 permission.view_channel = False
-                self.halloween_text_channel = await self.bot.guild.create_text_channel(f"🍬halloween-{datetime.datetime.now().year}", category=self.halloween_chat_category,position=0,topic=f"Loot Kanal für das Halloween Event in {datetime.datetime.now().year}",overwrites={self.bot.member_role:permission})
+                self.halloween_text_channel = await self.bot.guild.create_text_channel(f"🍬halloween-{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}", category=self.halloween_chat_category,position=0,topic=f"Loot Kanal für das Halloween Event in {datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}",overwrites={self.bot.member_role:permission})
 
             # Searching for halloween notification embed
             await LOGGER.info("Searching for halloween notification option embed and checking if it already exists")
@@ -111,13 +112,13 @@ class HalloweenEvent(Event):
             await LOGGER.info("Searching for halloween reward role")
             halloween_roles = await self.bot.guild.fetch_roles()
             for role in halloween_roles:
-                if str(role.name).startswith("Halloween Candy Collector") and str(role.name).split(" ")[3] == str(datetime.datetime.now().year):
+                if str(role.name).startswith("Halloween Candy Collector") and str(role.name).split(" ")[3] == str(datetime.datetime.now(ZoneInfo("Europe/Berlin")).year):
                     self.halloween_reward_role = role
 
             # Creating halloween reward role if it does not exist
             await LOGGER.info("Creating halloween reward role if it does not existent")
             if self.halloween_reward_role == None:
-                self.halloween_reward_role = await self.bot.guild.create_role(name=f"Halloween Candy Collector {datetime.datetime.now().year}",color=0xe67e22)
+                self.halloween_reward_role = await self.bot.guild.create_role(name=f"Halloween Candy Collector {datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}",color=0xe67e22)
 
             # Change bot avatar to halloween edition
             await LOGGER.info("Change bot avatar to halloween edition")
@@ -161,38 +162,38 @@ class HalloweenEvent(Event):
         await self.halloween_text_channel.set_permissions(self.bot.member_role, overwrite=permission)
 
         # Giving everybody an event role
-        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_role_distribution", False):
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_role_distribution", False):
             await LOGGER.info("Giving everybody an event role")
             for member in self.bot.get_all_members():
                 await member.add_roles(self.halloween_looter_role)
-            DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_role_distribution",True)
+            DATABASE.set_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_role_distribution",True)
 
         # Announce event start
         await LOGGER.info("Sending event start announcement")
         activity = discord.Game(name="Halloween")
         await self.bot.change_presence(activity=activity)
-        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message", False):
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_announcement_message", False):
             embed = discord.Embed(color=0xfa5c07,title="***🎃🦇👻Happy Halloween👻🦇🎃***")
             embed.add_field(name="Link zum Event",value=self.halloween_text_channel.mention)
             channel = self.bot.sandbox_text_channel if DEBUG else self.bot.general_text_channel
             await channel.send(self.bot.member_role.mention,embed=embed)
-            DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_announcement_message",True)
+            DATABASE.set_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_announcement_message",True)
 
         # Send welcome message
         await LOGGER.info("Sending welcome message")
-        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_welcome_message", False):
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_welcome_message", False):
             with open(os.path.join("data","events","halloween","welcome_message.md"),"r",encoding="utf-8") as f:
                 content = f.read()
                 f.close()
-            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now().year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}")
-            DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_welcome_message",True)
+            await self.halloween_text_channel.send(f"{self.halloween_looter_role.mention}\n{content.replace("!YEAR!",str(datetime.datetime.now(ZoneInfo("Europe/Berlin")).year)).replace("!BAG_TIMER!",str(LOOT_BAG_REMAIN_TIMER))}")
+            DATABASE.set_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_welcome_message",True)
 
         # Sending notification option embed
         await LOGGER.info("Sending notification option embed")
         if self.halloween_notification_embed == None:
             embed = discord.Embed(title=self.halloween_notification_title_text, color=0xfa5c07)
             embed.description="Hier kannst du entscheiden, ob du Benachrichtigungen erhalten willst!"
-            embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
+            embed.set_footer(text=datetime.datetime.now(ZoneInfo("Europe/Berlin")).strftime("%d.%m.%Y • %H:%M"))
             thumbnail = discord.File(os.path.join("data","images","halloweenbell.png"), filename='halloweenbell.png')  
             embed.set_thumbnail(url="attachment://halloweenbell.png")
             embed = await self.halloween_text_channel.send(file=thumbnail,embed=embed,view=self.halloween_notification_view)
@@ -242,12 +243,12 @@ class HalloweenEvent(Event):
             await LOGGER.info("Lootbag still present, no new lootbag will be generated")
         
         # Double candy message
-        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_double_candy_message", False):
-            if datetime.datetime.now().hour >= 18 or DEBUG:
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_double_candy_message", False):
+            if datetime.datetime.now(ZoneInfo("Europe/Berlin")).hour >= 18 or DEBUG:
                 await LOGGER.info("Sending double candy message")
                 embed = discord.Embed(title=f'🍬Ab jetzt gibt es doppelte Süßigkeiten🍬' ,color=0xfa5c07)
                 await self.halloween_text_channel.send(self.halloween_looter_role.mention,embed=embed)
-                DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_double_candy_message",True)
+                DATABASE.set_config(f"halloween_event_{datetime.datetime.now(ZoneInfo("Europe/Berlin")).year}_double_candy_message",True)
             
     async def end(self):
         await super().end()

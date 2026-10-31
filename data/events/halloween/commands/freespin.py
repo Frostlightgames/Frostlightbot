@@ -1,12 +1,13 @@
 import discord
 import datetime
+from zoneinfo import ZoneInfo
 from data.classes.database import DATABASE
 
 def register_freespin_command(slash, bot):
     @slash.command(name="freespin",description="[gamex] Vergibt gratis Spukraddrehs",guild=discord.Object(id=670321104866377748))
     async def free_spin_command(interaction:discord.Integration, name:str="", amount:int=1):
         
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(ZoneInfo("Europe/Berlin"))
         timestamp = now.strftime("[%d.%m.%Y %H:%M]")
 
         if interaction.user.id == 465412731709816853:
