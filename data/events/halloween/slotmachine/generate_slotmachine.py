@@ -28,6 +28,7 @@ async def generate_slot_machine(event: HalloweenEvent):
 
     # Sending slot machine
     embed = discord.Embed(title="🎰 Das Spukrad der Süßigkeiten erwacht! 🎰",color=0xfa5c07)
+    embed.description = f"Das Spukrad verschwindet <t:{int((datetime.datetime.now()+datetime.timedelta(minutes=1)).timestamp())}:R>"
     embed.add_field(name="Beschreibung",value=hint_text)
     embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
     embed.set_thumbnail(url="attachment://slotmachine.png")
