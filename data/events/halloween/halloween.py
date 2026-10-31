@@ -187,6 +187,7 @@ class HalloweenEvent(Event):
         await LOGGER.info("Sending notification option embed")
         if self.halloween_notification_embed == None:
             embed = discord.Embed(title=self.halloween_notification_title_text, color=0xfa5c07)
+            embed.description="Hier kannst du entscheiden, ob du Benachrichtigungen erhalten willst!"
             embed.set_footer(text=datetime.datetime.now().strftime("%d.%m.%Y • %H:%M"))
             thumbnail = discord.File(os.path.join("data","images","halloweenbell.png"), filename='halloweenbell.png')  
             embed.set_thumbnail(url="attachment://halloweenbell.png")
