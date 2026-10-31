@@ -17,6 +17,8 @@ from data.events.halloween.commands.freespin import register_freespin_command
 from data.events.halloween.commands.endhalloween import register_endhalloween_command
 from data.events.halloween.commands.trick_or_treat import register_trick_or_treat_command
 
+from data.events.halloween.cogs.interaction_listener import HalloweenCogInteractionListener
+
 init()
 
 class FrostlightBot(discord.Client):
@@ -28,12 +30,14 @@ class FrostlightBot(discord.Client):
         self.event_manager = None
         self.member_manager = None
         
+        self.halloween_listener = HalloweenCogInteractionListener(self)
+        
     async def on_ready(self):
         await self.wait_until_ready()
         if not self.synced:
             await slash.sync(guild=discord.Object(id=self.guild_id))
             self.synced = True
-
+        
         self.guild = await self.fetch_guild(self.guild_id)
         self.general_text_channel = await self.guild.fetch_channel(DATABASE.get_config("main_channel_id"))
         self.sandbox_text_channel = await self.guild.fetch_channel(DATABASE.get_config("sandbox_channel_id"))
@@ -47,6 +51,9 @@ class FrostlightBot(discord.Client):
         await LOGGER.info("Frostlightbot Online", self)
 
         self.event_updater = self.loop.create_task(self.event_manager.update())
+        
+    async def on_message(self, message: discord.Message):
+        await self.halloween_listener.on_message(message)
 
 token = os.getenv("TOKEN")
 activity = discord.Game(name="Frostlightgames")

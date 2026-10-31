@@ -12,7 +12,7 @@ from data.classes.database import DATABASE
 if TYPE_CHECKING:
     from main import FrostlightBot
 
-DEBUG = True
+DEBUG = False
 SWEETS_GOAL = 100
 LOOT_BAG_REMAIN_TIMER = 3
 
