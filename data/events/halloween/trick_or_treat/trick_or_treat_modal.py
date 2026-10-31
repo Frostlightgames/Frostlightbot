@@ -7,6 +7,7 @@ from data.classes.logger import LOGGER
 from data.classes.database import DATABASE
 from data.classes.member import Member
 from data.events.halloween.halloween import SWEETS_GOAL
+from data.funcitons.get_datetime import get_datetime
 
 if TYPE_CHECKING:
     from main import FrostlightBot
@@ -26,7 +27,7 @@ class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
             if bot.member_manager.member_list[member].uid == DATABASE.get_config(f"halloween_event_2026_{self.member.uid}_trick_or_treat_last_steal", ""):
                 continue
             
-            if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{bot.member_manager.member_list[member].uid}_trick_or_treat_steal_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
+            if get_datetime(DATABASE.get_config(f"halloween_event_2026_{bot.member_manager.member_list[member].uid}_trick_or_treat_steal_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
                 continue
             
             if bot.member_manager.member_list[member].candy >= 5:
@@ -47,8 +48,8 @@ class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
         if selected_member.uid == DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_last_steal", ""):
             return await self.error(interaction, "Du hast dein Ziel bereits zuletzt beklaut 👻")
         
-        if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
-            return await self.error(interaction, f"Du kannst diesen Befehl erst wieder <t:{int(datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")).timestamp())}:R> ausführen 👻")
+        if get_datetime(DATABASE.get_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
+            return await self.error(interaction, f"Du kannst diesen Befehl erst wieder <t:{int(get_datetime(DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")).timestamp())}:R> ausführen 👻")
         
         if selected_member.candy < 5:
             return await self.error(interaction, "Dein Ziel hat zu wenig Süßigkeiten zum abgeben 👻")
