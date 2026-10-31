@@ -17,7 +17,7 @@ async def generate_slot_machine(event: HalloweenEvent):
         (4, "Ein leises Klingen erklingt in der Ferne oder war es nur der Wind? 🔔"),
         (5, "Dein Einsatz liegt auf dem Tisch. Die Geister tuscheln... aber niemand versteht ihre Sprache. 🕯️"),
         (6, "Das Rad der Nacht dreht sich. Ob's dir wohlgesinnt ist? 🌒"),
-        (7, "Eine schwarze Katze schaut dich an ruhig, unbeteiligt. 🐈‍⬛"),
+        (7, "Eine schwarze Katze kreuzt deinen Weg und schnurrt geheimnisvoll. Selbst die Unglücksboten sind auf deiner Seite 🐈‍⬛"),
         (8, "Ein Tropfen Wachs fällt von der Kerze... formt fast ein Herz, fast ein Schädel. 🕯️💀"),
         (9, "Ein goldenes Licht flackert kurz auf und alles riecht nach Karamell und Glück. 🍭✨"),
     ]
