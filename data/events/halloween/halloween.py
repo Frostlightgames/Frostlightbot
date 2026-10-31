@@ -235,7 +235,15 @@ class HalloweenEvent(Event):
                 await LOGGER.info(f"Next lootbag in {self.lootbag_wait_time} minutes")
         else:
             await LOGGER.info("Lootbag still present, no new lootbag will be generated")
-
+        
+        # Double candy message
+        if not DATABASE.get_config(f"halloween_event_{datetime.datetime.now().year}_double_candy_message", False):
+            if datetime.datetime.now().hour >= 18 or DEBUG:
+                await LOGGER.info("Sending double candy message")
+                embed = discord.Embed(title=f'🍬Ab jetzt gibt es doppelte Süßigkeiten🍬' ,color=0xfa5c07)
+                await self.halloween_text_channel.send(self.halloween_looter_role.mention,embed=embed)
+                DATABASE.set_config(f"halloween_event_{datetime.datetime.now().year}_double_candy_message",True)
+            
     async def end(self):
         await super().end()
 
@@ -244,7 +252,7 @@ class HalloweenEvent(Event):
         # Create a summary of the collected candy
         await LOGGER.info("Creating a summary of the collected candy")
         self.bot.member_manager.scan_for_member()
-        embed = discord.Embed(title=f'🍬Das Event ist vorbei, hier ist die auswertung🍬' , color=0xfa5c07)
+        embed = discord.Embed(title=f'🍬Das Event ist vorbei, hier ist die Auswertung🍬' , color=0xfa5c07)
         for member in self.bot.member_manager.member_list:
             if self.bot.member_manager.member_list[member].candy > 0:
                 embed.add_field(name=f"{self.bot.member_manager.member_list[member].name}",value=f"{self.bot.member_manager.member_list[member].candy} 🍬", inline=False)
