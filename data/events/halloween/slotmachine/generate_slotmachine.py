@@ -10,13 +10,13 @@ async def generate_slot_machine(event: HalloweenEvent):
 
     # Generate clickable slot machine embed
     HINT_TEXTS = [
-        (0, "Ein kalter Wind weht durch das Gruselcasino... 🍂 Vielleicht ist heute nicht dein Tag."),
-        (1, "Die Schatten flüstern... 'Nicht jede Münze glänzt im Dunkeln.' 👻"),
+        (0, "Ein kalter Wind weht durch das Gruselcasino... 👻 Die Geister raten dir deine Süßigkeiten festzuhalten."),
+        (1, "Die Schatten flüstern... 'Nicht jede Münze glänzt im Dunkeln.' 🍂"),
         (2, "Ein Rabe kräht dreimal vor deinem Einsatz. 🪶 Ein schlechtes Omen?"),
         (3, "Die Kürbisse kichern leise... vielleicht bringen sie Glück, vielleicht nur Spuk. 🎃"),
-        (4, "Ein leises Klingen erklingt in der Ferne oder war es nur der Wind? 🔔"),
-        (5, "Dein Einsatz liegt auf dem Tisch. Die Geister tuscheln... aber niemand versteht ihre Sprache. 🕯️"),
-        (6, "Das Rad der Nacht dreht sich. Ob's dir wohlgesinnt ist? 🌒"),
+        (4, "Das Glück klopft leise an die Tür... doch ob jemand öffnet, bleibt abzuwarten 🔔"),
+        (5, "Dein Einsatz liegt auf dem Tisch. Die Geister tuscheln... aber niemand versteht ihre Sprache. 👻"),
+        (6, "Das Rad der Nacht dreht sich. Ob's dir wohlgesinnt ist?  🕷️🌒"),
         (7, "Eine schwarze Katze kreuzt deinen Weg und schnurrt geheimnisvoll. Selbst die Unglücksboten sind auf deiner Seite 🐈‍⬛"),
         (8, "Ein Tropfen Wachs fällt von der Kerze... formt fast ein Herz, fast ein Schädel. 🕯️💀"),
         (9, "Ein goldenes Licht flackert kurz auf und alles riecht nach Karamell und Glück. 🍭✨"),
