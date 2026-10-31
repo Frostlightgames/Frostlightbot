@@ -10,7 +10,7 @@ from data.events.halloween.halloween import SWEETS_GOAL
 if TYPE_CHECKING:
     from main import FrostlightBot
 
-class TrickOrTreatModal(discord.ui.Modal, title="Trick or Treat"):
+class TrickOrTreatModal(discord.ui.Modal, title="Süßes oder Saures"):
     def __init__(self, bot: FrostlightBot, member: Member):
         super().__init__(timeout=0)
         self.bot = bot
@@ -32,8 +32,8 @@ class TrickOrTreatModal(discord.ui.Modal, title="Trick or Treat"):
                 self.steal_member_list.append([bot.member_manager.member_list[member].uid,bot.member_manager.member_list[member].name])
         
         options = [discord.SelectOption(label=member[1], value=member[0]) for member in self.steal_member_list]
-        self.member_select = discord.ui.Select(placeholder="Wähle einen Spieler aus", options=options, min_values=1, max_values=1)
-        self.add_item(discord.ui.Label(text="Spieler", description="Wähle einen Spieler aus, von dem du Süßigkeiten stehlen möchtest.", component=self.member_select))
+        self.member_select = discord.ui.Select(placeholder="Wähle eine Person aus", options=options, min_values=1, max_values=1)
+        self.add_item(discord.ui.Label(text="Spieler", description="Wähle eine Person aus, von dem du Süßigkeiten stehlen möchtest.", component=self.member_select))
 
     async def on_submit(self, interaction: discord.Interaction):
         selected_member = self.bot.member_manager.get(int(self.member_select.values[0]))
@@ -47,10 +47,10 @@ class TrickOrTreatModal(discord.ui.Modal, title="Trick or Treat"):
             return await self.error(interaction, "Du hast dein Ziel bereits zuletzt beklaut 👻")
         
         if datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{stealer_member.uid}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")) > datetime.datetime.now():
-            return await self.error(interaction, f"Du kannst diesen Befehl erst wieder <t:{int(datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")).timestamp())}:R> ausführen.")
+            return await self.error(interaction, f"Du kannst diesen Befehl erst wieder <t:{int(datetime.datetime.fromisoformat(DATABASE.get_config(f"halloween_event_2026_{interaction.user.id}_trick_or_treat_command_cooldown", "2000-01-01T00:00:00")).timestamp())}:R> ausführen 👻")
         
         if selected_member.candy < 5:
-            return await self.error(interaction, "Dein Ziel hat zu wenig Süßigkeiten zum abgeben")
+            return await self.error(interaction, "Dein Ziel hat zu wenig Süßigkeiten zum abgeben 👻")
         
         if selected_member.candy >= SWEETS_GOAL:
             selected_member.candy = max(SWEETS_GOAL,selected_member.candy - stolen_candy)
@@ -92,5 +92,5 @@ class TrickOrTreatModal(discord.ui.Modal, title="Trick or Treat"):
         return await interaction.response.send_message(embed=embed,ephemeral=True)
 
     async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
-        await self.error(interaction,"Es gab einen Fehler")
+        await self.error(interaction,"Es gab einen Fehler 👻")
         await LOGGER.error(f"Error in TrickOrTreatModal: {error}")
