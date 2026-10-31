@@ -88,6 +88,13 @@ class HalloweenEvent(Event):
                         permission.send_messages = False
                         permission.view_channel = True
                         permission.read_message_history = True
+                        permission.add_reactions = True
+                        permission.use_application_commands = True
+                        permission.embed_links = True
+                        permission.external_emojis = True
+                        permission.external_stickers = True
+                        permission.attach_files = True
+                        permission.use_embedded_activities = True
                         await channel.set_permissions(self.bot.member_role, overwrite=permission)
 
             # Creating new halloween channel if it does not exists
